@@ -22,7 +22,7 @@ class GUI:
         self.model = self.Knight
 
         # sets the default character to knight
-        self.characters = ("Knight", "Crypto")
+        self.characters = ("Knight", "Crypto") # List of character names
         self.character = self.characters[0]
 
         # These are attributes of the class and not local variables of a method as they shall be frequently updated
