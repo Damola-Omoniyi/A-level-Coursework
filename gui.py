@@ -11,15 +11,14 @@ class GUI:
     def __init__(self, base):
         self.base = base  # base refers to the Main class in which a GUI object is instantiated.
         self.frm_current = DirectFrame()  # Keeps track of the Frame currently being displayed.
-        self.base.is_game_mode_single_player = True  # Holds the value of the game mode True for single player
+        self.base.is_game_mode_single_player = True  # Holds the value of the game mode, True for single player
 
         self.Knight = Actor("models/Knight/knight.bam", {"Idle": "models/Knight/knight_Idle.bam"})  # knight model
         self.Crypto = Actor("models/Crypto/Crypto.bam", {"Idle": "models/Crypto/Crypto_Idle.bam"})  # Crypto model
 
         self.models = {"Knight": self.Knight, "Crypto": self.Crypto}  # dictionary of characters
-        # makes accessing characters easier
-        # self.model = self.characters["Knight"]  # current model default set to knight
-        self.model = self.Knight
+        # makes accessing character models easier
+        self.model = self.Knight # current model default set to knight
 
         # sets the default character to knight
         self.characters = ("Knight", "Crypto") # List of character names
@@ -42,12 +41,14 @@ class GUI:
         self.bar_power_player2.hide()
 
         self.controls = ("keyboard", "gamepad1", "gamepad2")  # List of available controls
-        self.lbl_error = DirectLabel()
+        self.lbl_error = DirectLabel() # Label that displays an error message when selecting invalid controls
 
 
     def start(self):
         # This function is called at the start of the game to load the game's GUI
         self.title_menu()
+
+# ----------------------------------------------------------------------------------------------------------------------
 
     def title_menu(self):
         frm_title = DirectFrame(frameSize=(-2, 2, -1, 1),
@@ -142,7 +143,7 @@ class GUI:
                                         frameColor=(1, 1, 1, 1),
                                         relief="flat",
                                         command=self.set_game_mode,
-                                        extraArgs=[False])
+                                        extraArgs=[False]) # states that the game mode is not single player
 
         btn_back = DirectButton(text="BACK",
                                 parent=frm_game_mode_menu,
@@ -176,10 +177,8 @@ class GUI:
         self.model.reparentTo(self.base.render)
         self.set_model_light(x_position)
         self.model.show()
-        # add lighting to model
 
     def select_character1_menu(self):
-
         self.base.set_background_color(0.2, 0.2, 0.2)
         self.frm_current.hide()
         frm_main = DirectFrame(frameColor=(0, 0, 0, 1), frameSize=(-2, 0, -1, 1))
@@ -193,8 +192,7 @@ class GUI:
         btn_previous_character = DirectButton(text="<", parent=frm_main, pos=(-1.75, 0, -0.15),
                                               frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.25,
                                               command=self.change_character,
-                                              extraArgs=[-1, lbl_character, 35],
-                                              )
+                                              extraArgs=[-1, lbl_character, 35])
 
         btn_next_character = DirectButton(text=">", parent=frm_main, pos=(-0.25, 0, -0.15),
                                           command=self.change_character,
@@ -217,8 +215,8 @@ class GUI:
         btn_back = DirectButton(text="BACK", parent=frm_main, pos=(-1.5, 0, -0.65), command=self.game_mode_menu,
                                 frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15)
 
-    def select_character2_menu(self):
 
+    def select_character2_menu(self):
         self.base.set_background_color(0.2, 0.2, 0.2)
         self.frm_current.hide()
         frm_main = DirectFrame(frameColor=(0, 0, 0, 1), frameSize=(0, 2, -1, 1))
@@ -243,9 +241,7 @@ class GUI:
 
         btn_change_controls = DirectButton(text="change controller", parent=frm_main, pos=(1, 0, 0.75),
                                     frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15,
-                                    command=self.change_controls,
-                                           extraArgs=[lbl_controls])
-
+                                    command=self.change_controls, extraArgs=[lbl_controls])
         if self.base.is_game_mode_single_player:
             # hide these widgets if playing single player mode
             lbl_controls["text"] = "CPU"
@@ -266,60 +262,69 @@ class GUI:
         if controller_index+1 > len(self.controls):  # If end of tuple reached cycle back to first item
             widget["text"] = self.controls[0]
         else:
-            widget["text"] = self.controls[controller_index]
+            widget["text"] = self.controls[controller_index]  # Change text of label
 
     def change_character(self, direction, widget, x_position=35):
         self.model.hide()
         character_index = (self.characters.index(self.character) + direction) % len(self.characters)
-        # If index greater than length of list cycle back to first character in list
+        # If index greater than length of list cycle back to first character in list using modulus operator
         self.character = self.characters[character_index]
-        widget["text"] = self.character
+        widget["text"] = self.character # Change text of character label
         self.model = self.models[self.character]
-        self.set_model(x_position)
+        self.set_model(x_position) # Set new character model to be displayed
 
     def next_menu(self, player_num, player, controller):
-        if self.base.controls.check_valid_controls(controller["text"]):
+        if self.base.controls.check_valid_controls(controller["text"]): # First check if control selected is valid
             if player_num == 1:
                 self.select_character2_menu()
+                # Go to next character selection menu if for player 1
             elif player_num == 2:
                 self.select_scene_menu()
-            #self.base.player_data[player_num-1] = [player_num, self.base.characters[player["text"]], controller["text"]]
+                # If for player 2 go to scene menu
+            self.base.player_data[player_num-1] = [player_num, player["text"], controller["text"]]
+            # Update player data from main class. List in  main class is 0-indexed hence the subtraction
 
             if self.base.controls.controls_availability[controller["text"]]:
                 self.base.controls.controls_availability[controller["text"]] = False
                 # If a controller has been selected it is no longer available
         else:
+            # If the controls selected were invalid
             self.lbl_error.hide()
             self.lbl_error = DirectLabel(text=self.base.controls.error_msg, scale=0.1)
             self.base.taskMgr.add(self.show_error_msg, "error message")
 
-
-
     def show_error_msg(self, task):
         if task.time < 1.5:
             self.lbl_error.show()
+            # Display error message for 1.5 seconds
         else:
+            # Hide message after 1.5 seconds remove task and finish
             self.lbl_error.hide()
             self.base.taskMgr.remove("error message")
             return task.done
         return task.cont
 # ----------------------------------------------------------------------------------------------------------------------
-    def select_scene_menu(self):
-        frm_main = DirectFrame(frameSize=(-2, 2, -1, 1),
-                               frameColor=(0, 0, 0, 1))
 
+    def select_scene_menu(self):
+        frm_main = DirectFrame(frameSize=(-2, 2, -1, 1), frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
         self.frm_current = frm_main
         btn_select_scene1 = DirectButton(parent=frm_main, scale=0.35, image="models/moonSurface.png",
-                                         pos=(-0.5, 0, 0))
+                                         pos=(-0.5, 0, 0), command=self.set_scene,
+                                         extraArgs=[1])
         btn_select_scene2 = DirectButton(parent=frm_main, scale=0.35, image="models/Pier.png",
-                                         pos=(0.5, 0, 0))
-
+                                         pos=(0.5, 0, 0), command=self.set_scene,
+                                         extraArgs=[2])
         lbl_select_scene = DirectLabel(text="select a stage", parent=frm_main, pos=(0, 0, 0.75),
                                        frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15)
+        btn_start_game = DirectButton(text="Start Game", parent=frm_main, pos=(0, 0, -0.85),
+                                      command = self.base.start_game,frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1),
+                                      scale=0.15)
 
-        btn_start_game = DirectButton(text="Start Game", parent=frm_main, pos=(0, 0, -0.85), command = self.base.start_game,
-                                      frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15)
+    def set_scene(self, scene):
+        self.base.scene_id = scene
+# ----------------------------------------------------------------------------------------------------------------------
+
     def in_game_gui(self):
         self.lbl_time.show()
         self.bar_health_player1.show()
