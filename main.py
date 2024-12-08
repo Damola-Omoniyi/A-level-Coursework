@@ -6,6 +6,7 @@ from controls import Controller
 from panda3d.core import *
 
 loadPrcFile("config/Config.prc")
+
 '''loadPrcFileData("", """
     fullscreen true
     win-size 1920 1080
@@ -26,7 +27,7 @@ class Main(ShowBase):
 
         self.is_game_mode_single_player = True  # Holds the value of the game mode True for single player
 
-        # TODO: These are temproary lines of code only for testing to be removed
+        # TODO: These are temporary lines of code only for testing to be removed
         self.accept("p",  self.UI.pause_menu)
         self.accept("x",  self.UI.end_round_menu)
 
@@ -34,10 +35,14 @@ class Main(ShowBase):
         self.game_started = False
 
         self.taskMgr.add(self.check_start_game, "START")
-        # self.taskMgr.add(self.update_music, "music")
+        self.taskMgr.add(self.update_music, "music")
 
         self.scene = None # Scene model to be displayed
         self.scene_id = 1  # Scene selected by player
+
+        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
+        self.current_song = self.loader.loadMusic(self.music[1])
+        self.can_play_song = True
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -52,6 +57,21 @@ class Main(ShowBase):
         self.UI.model.hide()  # hide model
         self.load_scene(self.scene_id)
         self.UI.in_game_gui()
+
+    def update_music(self, task):
+        print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
+        # print(f"Current-time {self.current_song.getTime()}")
+        for song in self.music:
+            if self.can_play_song:
+                self.current_song = self.loader.loadMusic(song)
+                self.current_song.play()
+                self.current_song.length()
+                self.current_song.getTime()
+        if self.current_song.length() > self.current_song.getTime():
+            self.can_play_song = False
+        else:
+            self.can_play_song = True
+        return task.cont
 
     def load_scene(self, scene_id):
         if scene_id == 1:

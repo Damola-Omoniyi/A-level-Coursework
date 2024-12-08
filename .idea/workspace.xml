@@ -7,8 +7,6 @@
     <list default="true" id="5df144d0-e185-4bf8-ba35-4cf0022aefdd" name="Changes" comment="This was just an initial test at setting up stuff">
       <change beforePath="$USER_HOME$/A level Coursework/A-level-CourseWork/player.py" beforeDir="false" afterPath="$USER_HOME$/A level Coursework/A-level-CourseWork/player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controls.py" beforeDir="false" afterPath="$PROJECT_DIR$/controls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,5 +63,16 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="This was just an initial test at setting up stuff" />
     <option name="LAST_COMMIT_MESSAGE" value="This was just an initial test at setting up stuff" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/A level Coursework/A-level-CourseWork/main2.py</url>
+          <line>71</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
