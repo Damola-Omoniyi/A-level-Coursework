@@ -10,7 +10,6 @@ class Controller:
         # This dictionary stores the state of control availability if a control method is already in use or free to use
 
         self.gamepad = "Keyboard"
-
         self.gamepads = self.base.devices.getDevices(InputDevice.DeviceClass.gamepad)
         # The list of all external game pads detected
         self.error_msg = ""
