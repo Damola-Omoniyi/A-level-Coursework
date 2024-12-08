@@ -35,14 +35,15 @@ class Main(ShowBase):
         self.game_started = False
 
         self.taskMgr.add(self.check_start_game, "START")
-        self.taskMgr.add(self.update_music, "music")
+        #self.taskMgr.add(self.update_music, "music")
 
         self.scene = None # Scene model to be displayed
         self.scene_id = 1  # Scene selected by player
 
         self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
-        self.current_song = self.loader.loadMusic(self.music[1])
+        self.current_song = self.loader.loadMusic(self.music[0])
         self.can_play_song = True
+        self.update_music()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -58,20 +59,24 @@ class Main(ShowBase):
         self.load_scene(self.scene_id)
         self.UI.in_game_gui()
 
-    def update_music(self, task):
-        print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
-        # print(f"Current-time {self.current_song.getTime()}")
+    def update_music(self):
+        #print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
+
         for song in self.music:
             if self.can_play_song:
+                print(song)
+                self.can_play_song = False
                 self.current_song = self.loader.loadMusic(song)
+                # YOU ARE SO SILLY!!! RESET VALUES RESET VALUE WE HAVE BEEN HERE FOR OVER 2 HOURS FOR JUST ONE LINE
+                # BAKAAAA!!!!
                 self.current_song.play()
+
                 self.current_song.length()
                 self.current_song.getTime()
-        if self.current_song.length() > self.current_song.getTime():
-            self.can_play_song = False
-        else:
-            self.can_play_song = True
-        return task.cont
+                if self.current_song.length() > self.current_song.getTime():
+                    self.can_play_song = False
+                else:
+                    self.can_play_song = True
 
     def load_scene(self, scene_id):
         if scene_id == 1:
