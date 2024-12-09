@@ -43,7 +43,12 @@ class Main(ShowBase):
         self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
         self.current_song = self.loader.loadMusic(self.music[0])
         self.can_play_song = True
-        self.update_music()
+        #self.update_music()
+        self.taskMgr.add(self.update_music, "music")
+
+        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 5, "CPU": 5}
+
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -59,25 +64,25 @@ class Main(ShowBase):
         self.load_scene(self.scene_id)
         self.UI.in_game_gui()
 
-    def update_music(self):
+    def update_music(self, task):
         #print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
 
         for song in self.music:
             if self.can_play_song:
                 print(song)
-                self.can_play_song = False
+                #self.can_play_song = False
                 self.current_song = self.loader.loadMusic(song)
                 # YOU ARE SO SILLY!!! RESET VALUES RESET VALUE WE HAVE BEEN HERE FOR OVER 2 HOURS FOR JUST ONE LINE
-                # BAKAAAA!!!!
                 self.current_song.play()
 
                 self.current_song.length()
                 self.current_song.getTime()
-                if self.current_song.length() > self.current_song.getTime():
-                    self.can_play_song = False
-                else:
-                    self.can_play_song = True
+                #if self.current_song.length() > self.current_song.getTime():
+                #    self.can_play_song = False
+                #else:
+                #    self.can_play_song = True
 
+        return  task.cont
     def load_scene(self, scene_id):
         if scene_id == 1:
             self.scene = self.loader.loadModel("models/moonsurface/moonsurface.egg")

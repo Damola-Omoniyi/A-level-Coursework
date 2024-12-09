@@ -5,17 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5df144d0-e185-4bf8-ba35-4cf0022aefdd" name="Changes" comment="This was just an initial test at setting up stuff">
-      <change afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/gruntsound.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/qubodupPunch01.ogg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/sword_sfx.wav" afterDir="false" />
       <change beforePath="$USER_HOME$/A level Coursework/A-level-CourseWork/player.py" beforeDir="false" afterPath="$USER_HOME$/A level Coursework/A-level-CourseWork/player.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/A level Coursework" />
   </component>
   <component name="ProjectId" id="2pr9ecTtSSqpozqCwdgjLJgeP0H" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -27,14 +38,14 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "development",
-    "last_opened_file_path": "C:/Users/adeda/A level Coursework"
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/adeda/USBDRIVED/A level Coursework/Game-Name-EXPERIMENTING/A-level-Coursework/models"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\adeda\A level Coursework" />
       <recent name="C:\Users\adeda\USBDRIVED\A level Coursework\Game-Name-EXPERIMENTING\A-level-Coursework\models" />
+      <recent name="C:\Users\adeda\A level Coursework" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\adeda\USBDRIVED\A level Coursework\Game-Name-EXPERIMENTING\A-level-Coursework\models\Music" />
