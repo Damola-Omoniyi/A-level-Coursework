@@ -47,7 +47,7 @@ class Main(ShowBase):
         #self.update_music()
         self.taskMgr.add(self.update_music, "music")
 
-        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": False}
+        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
 
         self.characters = {"Crypto": Crypto, "Knight": Knight}
         self.player1 = None
@@ -77,8 +77,8 @@ class Main(ShowBase):
 
         self.player1.enemy = self.player2
         self.player2.enemy = self.player1
-        #self.player1.start()
-        #self.player2.start()
+        self.player1.start()
+        self.player2.start()
 
 
     def update_music(self, task):
