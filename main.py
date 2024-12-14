@@ -78,6 +78,23 @@ class Main(ShowBase):
 
         self.player1.enemy = self.player2
         self.player2.enemy = self.player1
+        self.player2.setCollision(self.player1.sphere_name)
+        self.player1.setCollision(self.player2.sphere_name)
+
+        self.pusher = CollisionHandlerPusher()
+        self.handler = CollisionHandlerEvent()
+        self.trav = CollisionTraverser()
+        self.cTrav = self.trav
+        self.pusher.addInPattern('%fn-into-%in')
+        self.pusher.addOutPattern('%fn-out-%in')
+
+        self.handler.addInPattern('%fn-into-%in')
+        self.handler.addAgainPattern('%fn-again-%in')
+        self.handler.addOutPattern('%fn-out-%in')
+
+        # self.pusher.addCollider(self.player2.sphere_nodepath, self.player2.player)
+        self.trav.addCollider(self.player2.sphere_nodepath, self.handler)
+        self.trav.addCollider(self.player1.sphere_nodepath, self.handler)
         self.player1.start()
         self.player2.start()
 

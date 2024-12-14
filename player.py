@@ -1,5 +1,7 @@
 from direct.fsm.FSM import FSM
 from direct.actor.Actor import Actor
+from direct.fsm.FSM import FSM
+from panda3d.core import *
 
 class Player(FSM):
     def __init__(self, player_num, base):
@@ -8,7 +10,7 @@ class Player(FSM):
         self.base = base
         self.player_num = player_num
         self.enemy = None
-        self.character =  Actor("models/Knight/knight.bam",
+        self.character = Actor("models/Knight/knight.bam",
                                {"Attack1": "models/Knight/knight_Attack1.bam",
                              "Attack2": "models/Knight/knight_Attack2.bam",
                              "Attack3": "models/Knight/knight_Attack3.bam",
@@ -30,11 +32,31 @@ class Player(FSM):
                              })
 
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
+        self.is_moving = False
+        self.speed = 0
+        self.direction = 0
+        self.c_sphere = CollisionSphere(0, 0, 1, 0.25)
+        self.sphere_name = f"cnode{self.player_num}"  # player1's name would be cnode1
+        self.sphere_nodepath = self.character.attachNewNode(CollisionNode(self.sphere_name))
+
+    def set_light(self):
+        # np stands for node path
+        d_light = DirectionalLight('d_light')
+        a_light = AmbientLight('a_light')
+        d_light_np = self.base.render.attachNewNode(d_light)
+        a_light_np = self.base.render.attachNewNode(a_light)
+
+        d_light.setColor((2, 2, 2, 1))
+        a_light.setColor((0.5, 0.5, 0.5, 1))
+        d_light_np.setHpr(-60, -30, 10)
+        self.base.render.setLight(d_light_np)
+        self.base.render.setLight(a_light_np)
 
     def start(self):
         self.set_controls()
         self.character.reparentTo(self.base.render)
         self.character.setScale(150)
+        self.set_light()
         self.character.setPos(0, 1000, -150)
         if self.player_num == 1:
             self.character.setX(-200)
@@ -42,15 +64,17 @@ class Player(FSM):
         elif self.player_num == 2:
             self.character.setH(270)
             self.character.setX(200)
+        self.request("Idle")
+        self.base.taskMgr.add(self.move_task, "move_task")
 
 
 
     def set_controls(self):
         if self.gamepad_no == 2:
-            self.base.accept("arrow_right", print, ["arrow-right"])
-            self.base.accept("arrow_left", print, ["arrow-left"])
-            self.base.accept('arrow_left-up', print, ["arrow-right-up"])
-            self.base.accept('arrow_right-up', print, ["arrow-left-up"])
+            self.base.accept("arrow_right", self.walk_forward)
+            self.base.accept("arrow_left", self.walk_backward)
+            self.base.accept('arrow_left-up', self.stop_walk)
+            self.base.accept('arrow_right-up', self.stop_walk)
             self.base.accept('arrow_up', print, ["arrow-up"])
             self.base.accept("arrow_down", print, ["arrow-down"])
             self.base.accept("arrow_down-up", print, ["arrow-down-up"])
@@ -72,10 +96,10 @@ class Player(FSM):
             self.base.accept(f"{gamepad_name}-dpad_up", print, ["up"])
             self.base.accept(f"{gamepad_name}-dpad_down", print, ["down"])
             self.base.accept(f"{gamepad_name}-dpad_down-up", print, ["down-up"])
-            self.base.accept(f"{gamepad_name}-dpad_left", print, ["left"])
-            self.base.accept(f"{gamepad_name}-dpad_left-up", print, ["left-up"])
-            self.base.accept(f"{gamepad_name}-dpad_right", print, ["right"])
-            self.base.accept(f"{gamepad_name}-dpad_right-up", print, ["right-up"])
+            self.base.accept(f"{gamepad_name}-dpad_left", self.walk_backward)
+            self.base.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
+            self.base.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
+            self.base.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
     def enterIdle(self):
         self.character.loop("Idle")
 
@@ -157,5 +181,55 @@ class Player(FSM):
     def exitSpecial2(self):
         self.character.stop()
 
+    def move_task(self, task):
+        # MOVEMENT: Forward and backward
+        dt = self.base.clock.dt  # delta time
+        self.speed = 100  # This value determines how fast our player moves
+
+        if self.is_moving:
+            self.character.setX(self.character.getX() + self.direction * self.speed * dt)
+        else:
+            self.speed = 0
+        return task.cont
+    def walk_forward(self):
+        self.is_moving = True
+        self.direction = 1
+        self.request("Walk")
+
+    def walk_backward(self):
+        self.is_moving = True
+        self.direction = -1
+        self.request("Walkback")
+
+    def stop_walk(self):
+        # Activated when a player takes their hand off the move buttons
+        self.is_moving = False
+        self.direction = 0
+        self.request("Idle")
+
+    def no_speed(self, a=0):
+        #print("donein")
+        self.is_moving = False
+        self.speed = 0
+
+        self.enemy.speed = 0
+        self.enemy.is_moving = False
+
+    def yes_speed(self, a=0):
+        #print("notdonin")
+        self.speed = 90
+        self.enemy.speed = 90
+
+
+
+    def setCollision(self, name):
+        # name is the name (cnode2) of our opponents collision capsule.
+        self.sphere_nodepath.node().addSolid(self.c_sphere)
+        # Uncomment this line to show the collision solid
+        self.sphere_nodepath.show()
+
+        self.base.accept(f'{self.sphere_name}-into-{name}', self.no_speed)
+        self.base.accept(f'{self.sphere_name}-again-{name}', self.no_speed)
+        self.base.accept(f'{self.sphere_name}-out-{name}', self.yes_speed)
 
 
