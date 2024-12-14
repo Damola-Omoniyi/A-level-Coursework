@@ -11,8 +11,13 @@ class Controller:
 
         self.gamepad = "Keyboard"
         self.gamepads = self.base.devices.getDevices(InputDevice.DeviceClass.gamepad)
+        self.base.taskMgr.add(self.update_controls_task, "UPdate controls ")
         # The list of all external game pads detected
         self.error_msg = ""
+
+    def update_controls_task(self, task):
+        self.gamepads = self.base.devices.getDevices(InputDevice.DeviceClass.gamepad)
+        return task.cont
 
     def check_valid_controls(self, controller):
         # This method checks if a control is valid for use by ensuring it is connected and available (not already being

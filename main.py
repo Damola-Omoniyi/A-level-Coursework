@@ -4,14 +4,16 @@ from direct.showbase.ShowBase import ShowBase
 from gui import GUI
 from controls import Controller
 from panda3d.core import *
+from crypto import Crypto
+from knight import Knight
 
 loadPrcFile("config/Config.prc")
-'''loadPrcFileData("", """
+
+''' loadPrcFileData("", """
     fullscreen true
     win-size 1920 1080
     aspect-ratio auto
-""")'''
-
+""") '''
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -26,7 +28,7 @@ class Main(ShowBase):
 
         self.is_game_mode_single_player = True  # Holds the value of the game mode True for single player
 
-        # TODO: These are temproary lines of code only for testing to be removed
+        # TODO: These are temporary lines of code only for testing to be removed
         self.accept("p",  self.UI.pause_menu)
         self.accept("x",  self.UI.end_round_menu)
 
@@ -34,14 +36,28 @@ class Main(ShowBase):
         self.game_started = False
 
         self.taskMgr.add(self.check_start_game, "START")
-        # self.taskMgr.add(self.update_music, "music")
+        #self.taskMgr.add(self.update_music, "music")
 
         self.scene = None # Scene model to be displayed
         self.scene_id = 1  # Scene selected by player
 
+        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
+        self.current_song = self.loader.loadMusic(self.music[0])
+        self.can_play_song = True
+        #self.update_music()
+        self.taskMgr.add(self.update_music, "music")
+
+        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
+
+        self.characters = {"Crypto": Crypto, "Knight": Knight}
+        self.player1 = None
+        self.player2 = None
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 
     def check_start_game(self, task):
+        # print(self.player_data)
         if self.game_started is True:
             self.start_game()
             self.taskMgr.remove("START") # Remove this task after game starts so as not to waste processing power
@@ -52,13 +68,44 @@ class Main(ShowBase):
         self.UI.model.hide()  # hide model
         self.load_scene(self.scene_id)
         self.UI.in_game_gui()
+        player1_character = self.characters[self.player_data[0][1]]
+        print(player1_character)
+        player2_character = self.characters[self.player_data[1][1]]
+
+        self.player1 = player1_character(self.player_data[0][0], self)
+        self.player2 = player2_character(self.player_data[1][0], self)
+
+        self.player1.enemy = self.player2
+        self.player2.enemy = self.player1
+        self.player1.start()
+        self.player2.start()
+
+
+    def update_music(self, task):
+            #print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
+
+            for song in self.music:
+                if self.can_play_song:
+                    #print(song)
+                    #self.can_play_song = False
+                    self.current_song = self.loader.loadMusic(song)
+                    # YOU ARE SO SILLY!!! RESET VALUES RESET VALUE WE HAVE BEEN HERE FOR OVER 2 HOURS FOR JUST ONE LINE
+                    self.current_song.play()
+
+                    self.current_song.length()
+                    self.current_song.getTime()
+                    # if self.current_song.length() > self.current_song.getTime():
+                    #    self.can_play_song = False
+                    # else:
+                    #    self.can_play_song = True
+
+            return  task.cont
 
     def load_scene(self, scene_id):
         if scene_id == 1:
             self.scene = self.loader.loadModel("models/moonsurface/moonsurface.egg")
             self.scene.reparentTo(self.render)
             self.scene.setPos(0, -750, -250)
-
             sun = self.loader.loadModel("models/jack.egg.pz")
             sun.reparentTo(self.render)
             sun.setPos(0, 4000, 500)
