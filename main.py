@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Import section
 from direct.showbase.ShowBase import ShowBase
+from direct.actor.Actor import Actor
 from gui import GUI
 from controls import Controller
 from panda3d.core import *
@@ -105,7 +106,7 @@ class Main(ShowBase):
         if scene_id == 1:
             self.scene = self.loader.loadModel("models/moonsurface/moonsurface.egg")
             self.scene.reparentTo(self.render)
-            self.scene.setPos(0, -750, -250)
+            self.scene.setPos(0, -750, -150)
             sun = self.loader.loadModel("models/jack.egg.pz")
             sun.reparentTo(self.render)
             sun.setPos(0, 4000, 500)
@@ -117,7 +118,7 @@ class Main(ShowBase):
             pier = self.loader.loadModel("models/Pier/Pier.egg")
             pier.reparentTo(self.render)
             pier.setScale(150)
-            pier.setPos(0, -2000, -850)
+            pier.setPos(0, -3000, -800)
             # pier.setH(0)
 
             self.scene.reparentTo(self.render)
