@@ -1,14 +1,30 @@
-class Player():
+from direct.fsm.FSM import FSM
+
+class Player(FSM):
     def __init__(self, player_num, base, character="Crypto"):
+        FSM.__init__(self, "character-FSM")
+
         self.base = base
         self.player_num = player_num
         #self.character = character
         self.enemy = None
+        self.character = character
 
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
 
     def start(self):
         self.set_controls()
+        self.character.reparentTo(self.base.render)
+        self.character.setScale(200)
+        self.character.setPos(0, 0, 20)
+        if self.player_num == 1:
+            self.character.setX(-100)
+            self.character.setH(90)
+        elif self.player_num == 2:
+            self.character.setH(270)
+            self.character.setX(300)
+
+
 
     def set_controls(self):
         if self.gamepad_no == 2:
@@ -41,4 +57,86 @@ class Player():
             self.base.accept(f"{gamepad_name}-dpad_left-up", print, ["left-up"])
             self.base.accept(f"{gamepad_name}-dpad_right", print, ["right"])
             self.base.accept(f"{gamepad_name}-dpad_right-up", print, ["right-up"])
+    def enterIdle(self):
+        self.character.loop("Idle")
+
+    def exitIdle(self):
+        self.character.stop()
+
+    def enterWalk(self):
+        self.character.loop("Walk")
+        self.character.setPlayRate(1.5, "Walk")
+
+    def exitWalk(self):
+        self.character.stop()
+
+    def enterWalkback(self):
+        self.character.loop("Walk")
+        self.character.setPlayRate(-1.5, "Walk")
+
+    def exitWalkback(self):
+        self.character.stop()
+
+    def enterImpact(self):
+        self.character.play("Impact1")
+
+    def exitImpact(self):
+        self.character.stop()
+
+    def enterAttack1(self):
+        self.character.play("Attack1")
+        self.character.setPlayRate(1.75, "Attack1")
+
+    def exitAttack1(self):
+        self.character.stop()
+
+    def enterAttack2(self):
+        self.character.play("Attack2")
+        self.character.setPlayRate(1.75, "Attack2")
+
+    def exitAttack2(self):
+        self.character.stop()
+
+    def enterAttack3(self):
+        self.character.play("Attack3")
+        self.character.setPlayRate(1.75, "Attack3")
+
+    def exitAttack3(self):
+        self.character.stop()
+
+    def enterAttack4(self):
+        self.character.play("Attack4")
+        self.character.setPlayRate(1.75, "Attack4")
+
+    def exitAttack4(self):
+        self.character.stop()
+
+    def enterBlock(self):
+        self.character.loop("Block1")
+
+    def exitBlock(self):
+        self.character.stop()
+
+    def enterJump(self):
+        self.character.play("Jump")
+
+    def exitJump(self):
+        self.character.stop()
+
+    def enterDeath(self):
+        self.character.play("Death1")
+
+    def exitDeath(self):
+        self.character.stop()
+
+    def enterSpecial1(self):
+        self.character.play("Special1")
+    def enterSpecial2(self):
+        self.character.play("Special2")
+    def exitSpecial1(self):
+        self.character.stop()
+    def exitSpecial2(self):
+        self.character.stop()
+
+
 
