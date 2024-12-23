@@ -15,7 +15,7 @@ loadPrcFile("config/Config.prc")
     win-size 1920 1080
     aspect-ratio auto
 """) '''
-
+# TODO - DO NOT USE A COLLISION WALL TOO COMPLEX INSTEAD CREATE A POINT OF OIRIGIN IF PLAYERS HAVE X VALUE 100 UNITS AWAY THEN SPEED
 # ----------------------------------------------------------------------------------------------------------------------
 
 class Main(ShowBase):
@@ -38,6 +38,7 @@ class Main(ShowBase):
 
         self.taskMgr.add(self.check_start_game, "START")
         #self.taskMgr.add(self.update_music, "music")
+
 
         self.scene = None # Scene model to be displayed
         self.scene_id = 1  # Scene selected by player
@@ -98,6 +99,13 @@ class Main(ShowBase):
         self.player1.start()
         self.player2.start()
 
+        self.taskMgr.add(self.update_cam, "update-camera")
+
+    def update_cam(self, task):
+        # print(self.camera.getPos())
+        self.cam.setX((self.player1.character.getX() + self.player2.character.getX())/2)
+        return task.cont
+
 
     def update_music(self, task):
             #print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
@@ -116,7 +124,6 @@ class Main(ShowBase):
                     #    self.can_play_song = False
                     # else:
                     #    self.can_play_song = True
-
             return  task.cont
 
     def load_scene(self, scene_id):
@@ -130,6 +137,7 @@ class Main(ShowBase):
             sun.setScale(500)
             self.set_background_color(0.1, 0.1, 0.1125)
             # TODO: apply lighting and shading to scene
+
         elif scene_id == 2:
             self.scene = self.loader.loadModel("models/BeachTerrain/BeachTerrain.egg")
             pier = self.loader.loadModel("models/Pier/Pier.egg")
@@ -142,6 +150,9 @@ class Main(ShowBase):
             self.scene.setPos(400, 1000, -1000)
             self.scene.setScale(75)
             self.set_background_color(0.53, 0.81, 0.98)
+
+
+
 
 
 base = Main()

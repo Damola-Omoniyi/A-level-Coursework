@@ -55,8 +55,9 @@ class Player(FSM):
     def start(self):
         self.set_controls()
         self.character.reparentTo(self.base.render)
-        self.character.setScale(150)
+        self.character.setScale(200)
         self.set_light()
+        self.base.cam.setZ(50)
         self.character.setPos(0, 1000, -150)
         if self.player_num == 1:
             self.character.setX(-200)
@@ -68,8 +69,8 @@ class Player(FSM):
         self.base.taskMgr.add(self.move_task, "move_task")
 
 
-
     def set_controls(self):
+        self.base.accept("p", self.print_x)
         if self.gamepad_no == 2:
             self.base.accept("arrow_right", self.walk_forward)
             self.base.accept("arrow_left", self.walk_backward)
@@ -185,12 +186,21 @@ class Player(FSM):
         # MOVEMENT: Forward and backward
         dt = self.base.clock.dt  # delta time
         self.speed = 100  # This value determines how fast our player moves
+        print(f"character {self.player_num} : {self.character.getX()}")
 
         if self.is_moving:
             self.character.setX(self.character.getX() + self.direction * self.speed * dt)
         else:
             self.speed = 0
+
+        if self.character.getX() <= -650 or self.character.getX() >= 650:
+            self.no_speed()
+            # TODO Instead of just disabling speed disable movement in particular direction
         return task.cont
+
+    def print_x(self):
+        print(f"character {self.player_num} : {self.character.getX()}")
+
     def walk_forward(self):
         self.is_moving = True
         self.direction = 1
