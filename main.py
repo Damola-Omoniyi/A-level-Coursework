@@ -15,7 +15,7 @@ loadPrcFile("config/Config.prc")
     win-size 1920 1080
     aspect-ratio auto
 """) '''
-# TODO - DO NOT USE A COLLISION WALL TOO COMPLEX INSTEAD CREATE A POINT OF OIRIGIN IF PLAYERS HAVE X VALUE 100 UNITS AWAY THEN SPEED
+# TODO - DO NOT USE A COLLISION WALL TOO COMPLEX INSTEAD CREATE A POINT OF ORIGIN IF PLAYERS HAVE X VALUE 100 UNITS AWAY THEN SPEED
 # ----------------------------------------------------------------------------------------------------------------------
 
 class Main(ShowBase):
