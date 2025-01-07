@@ -3,7 +3,6 @@ from panda3d.core import *
 from direct.actor.Actor import Actor
 from player import Player
 
-
 class Crypto(Player):
     def __init__(self, player_num, base):
         self.player_num = player_num
@@ -31,7 +30,7 @@ class Crypto(Player):
                              })
         super().__init__(self.player_num, self.base)
 
-        #self.player.setPos(300, 0, 0)
+        self.player.setPos(300, 0, 0)
         #self.player.setScale(200)
         #self.c_capsule = CollisionSphere(0.5, -0.4, 0.8, 0.25)
         #self.c_segment = CollisionSegment(0, 0.5, 1, 0, -0.5, 1)
@@ -43,27 +42,3 @@ class Crypto(Player):
             "Attack4": [282.9663848876953, 0.25]}
 
 
-    '''def special(self, num="1"):
-        super().special("2")
-        self.in_special2 = True
-        self.fireball = self.base.loader.loadModel(f"models/jack.egg.pz")
-        self.fireball.reparentTo(self.base.render)
-        self.fireball.setScale(45)
-        self.fireball.setPos(self.enemy.player.getPos())
-        self.fireball.setZ(self.fireball.getZ()+50)
-        self.base.taskMgr.add(self.special2_task, "sppecial")
-
-    def special2_task(self, task):
-        if self.in_special2:
-            if task.time<3:
-                self.ignore("y")
-                dt = self.base.clock.dt
-                self.fireball.setZ(self.fireball.getZ()+750*dt)
-                if abs(self.fireball.getZ()-self.enemy.player.getZ())<= 150 or abs(self.fireball.getX()-self.enemy.player.getX())<= 150:
-                    self.base.taskMgr.doMethodLater(0.3, self.react, 'reaction time')
-                    #print("hurt")
-            if task.time>3:
-                self.fireball.hide()
-                self.enemy.health -= 25
-                self.base.taskMgr.remove("sppecial")
-        return task.cont '''
