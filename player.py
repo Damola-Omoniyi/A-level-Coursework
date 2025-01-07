@@ -10,26 +10,7 @@ class Player(FSM):
         self.base = base
         self.player_num = player_num
         self.enemy = None
-        self.character = Actor("models/Knight/knight.bam",
-                               {"Attack1": "models/Knight/knight_Attack1.bam",
-                             "Attack2": "models/Knight/knight_Attack2.bam",
-                             "Attack3": "models/Knight/knight_Attack3.bam",
-                             "Attack4": "models/Knight/knight_Attack4.bam",
-                             "Attack5": "models/Knight/knight_Attack5.bam",
-                             "Block1": "models/Knight/knight_Block1.bam",
-                             "Death1": "models/Knight/knight_Death1.bam",
-                             "Death2": "models/Knight/knight_Death2.bam",
-                             "Idle": "models/Knight/knight_Idle.bam",
-                             "Impact1": "models/Knight/knight_Impact1.bam",
-                             "Impact2": "models/Knight/knight_Impact2.bam",
-                             "Intro1": "models/Knight/knight_Intro1.bam",
-                             "Outro1": "models/Knight/knight_Outro1.bam",
-                             "Special1": "models/Knight/knight_Special1.bam",
-                             "Special2": "models/Knight/knight_Special2.bam",
-                             "Special3": "models/Knight/knight_Special3.bam",
-                             "Walk": "models/Knight/knight_Walk.bam",
-                             "Jump": "models/Knight/knight_Jump.bam"
-                             })
+        self.character = None
 
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
         self.is_moving = False
@@ -37,7 +18,7 @@ class Player(FSM):
         self.direction = 0
         self.c_sphere = CollisionSphere(0, 0, 1, 0.25)
         self.sphere_name = f"cnode{self.player_num}"  # player1's name would be cnode1
-        self.sphere_nodepath = self.character.attachNewNode(CollisionNode(self.sphere_name))
+        self.sphere_nodepath = None
 
     def set_light(self):
         # np stands for node path
@@ -68,9 +49,7 @@ class Player(FSM):
         self.request("Idle")
         self.base.taskMgr.add(self.move_task, "move_task")
 
-
     def set_controls(self):
-        self.base.accept("p", self.print_x)
         if self.gamepad_no == 2:
             self.base.accept("arrow_right", self.walk_forward)
             self.base.accept("arrow_left", self.walk_backward)
@@ -87,6 +66,7 @@ class Player(FSM):
             self.base.accept('y', print, ["y"])
 
         elif self.gamepad_no < 2:
+            # If gamepad number is less than 2 that means our user is using a pc controller not the keyboard or AI
             self.base.controls.set_game_controls(self.gamepad_no)
             gamepad_name = f"gamepad{self.gamepad_no}"
             print(gamepad_name)
@@ -211,7 +191,7 @@ class Player(FSM):
         return task.cont
 
     def print_x(self):
-        print(f"character {self.player_num} : {self.character.getX()}")
+        print(f"character {self.player_num}: {self.character.getX()}")
 
     def walk_forward(self):
         self.is_moving = True
@@ -238,6 +218,8 @@ class Player(FSM):
         self.enemy.speed = 90
 
     def setCollision(self, name):
+
+        self.sphere_nodepath = self.character.attachNewNode(CollisionNode(self.sphere_name))
         # name is the name (cnode2) of our opponents collision capsule.
         self.sphere_nodepath.node().addSolid(self.c_sphere)
         # Uncomment this line to show the collision solid

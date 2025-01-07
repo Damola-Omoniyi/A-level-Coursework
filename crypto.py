@@ -3,10 +3,13 @@ from panda3d.core import *
 from direct.actor.Actor import Actor
 from player import Player
 
+
 class Crypto(Player):
     def __init__(self, player_num, base):
         self.player_num = player_num
         self.base = base
+        super().__init__(self.player_num, self.base)
+
         self.character = Actor("models/Crypto/Crypto.bam",
                             {"Attack1": "models/Crypto/Crypto_Attack1.bam",
                              "Attack2": "models/Crypto/Crypto_Attack2.bam",
@@ -28,9 +31,9 @@ class Crypto(Player):
                              "Walk": "models/Crypto/Crypto_Walk.bam",
                              "Jump": "models/Crypto/Crypto_Jump.bam"
                              })
-        super().__init__(self.player_num, self.base)
 
-        self.player.setPos(300, 0, 0)
+
+        # self.character.setPos(500, 0, 0)
         #self.player.setScale(200)
         #self.c_capsule = CollisionSphere(0.5, -0.4, 0.8, 0.25)
         #self.c_segment = CollisionSegment(0, 0.5, 1, 0, -0.5, 1)

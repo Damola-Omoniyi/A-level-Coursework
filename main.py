@@ -10,13 +10,8 @@ from knight import Knight
 
 loadPrcFile("config/Config.prc")
 
-''' loadPrcFileData("", """
-    fullscreen true
-    win-size 1920 1080
-    aspect-ratio auto
-""") '''
-# TODO - DO NOT USE A COLLISION WALL TOO COMPLEX INSTEAD CREATE A POINT OF ORIGIN IF PLAYERS HAVE X VALUE 100 UNITS AWAY THEN SPEED
 # ----------------------------------------------------------------------------------------------------------------------
+
 
 class Main(ShowBase):
     def __init__(self):
@@ -38,7 +33,7 @@ class Main(ShowBase):
 
         self.taskMgr.add(self.check_start_game, "START")
 
-        self.scene = None # Scene model to be displayed
+        self.scene = None  # Scene model to be displayed
         self.scene_id = 1  # Scene selected by player
 
         self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
@@ -46,7 +41,8 @@ class Main(ShowBase):
         self.can_play_song = True
         self.taskMgr.add(self.update_music, "music")
 
-        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3} # CPU is used for single player against an AI
+        self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
+        # CPU is used for single player against an AI
 
         self.characters = {"Crypto": Crypto, "Knight": Knight}
         
@@ -63,7 +59,7 @@ class Main(ShowBase):
     def check_start_game(self, task):
         if self.game_started is True:
             self.start_game()
-            self.taskMgr.remove("START") # Remove this task after game starts so as not to waste processing power
+            self.taskMgr.remove("START")  # Remove this task after game starts so as not to waste processing power
         return task.cont
 
     def start_game(self):
@@ -83,7 +79,7 @@ class Main(ShowBase):
         self.player1.start()
         self.player2.start()
 
-        self.taskMgr.add(self.update_cam, "update-camera")
+        #self.taskMgr.add(self.update_cam, "update-camera")
     
     def set_collisions(self):
         self.player2.setCollision(self.player1.sphere_name)
@@ -95,7 +91,6 @@ class Main(ShowBase):
 
         self.trav.addCollider(self.player2.sphere_nodepath, self.handler)
         self.trav.addCollider(self.player1.sphere_nodepath, self.handler)
-       
 
     def update_cam(self, task):
         self.cam.setX((self.player1.character.getX() + self.player2.character.getX())/2)
@@ -104,7 +99,7 @@ class Main(ShowBase):
 
     # TODO: Fix this please
     def update_music(self, task):
-            #print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
+            # print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
 
             for song in self.music:
                 if self.can_play_song:
@@ -121,7 +116,6 @@ class Main(ShowBase):
                     # else:
                     #    self.can_play_song = True
             return  task.cont
-
 
     def load_scene(self, scene_id):
         if scene_id == 1:
@@ -146,7 +140,6 @@ class Main(ShowBase):
             self.scene.setPos(400, 1000, -1000)
             self.scene.setScale(75)
             self.set_background_color(0.53, 0.81, 0.98)
-
 
 
 base = Main()

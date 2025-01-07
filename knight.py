@@ -8,6 +8,7 @@ class Knight(Player):
     def __init__(self, player_num, base):
         self.player_num = player_num
         self.base = base
+        super().__init__(self.player_num, self.base)
         self.character = Actor("models/Knight/knight.bam",
                                {"Attack1": "models/Knight/knight_Attack1.bam",
                              "Attack2": "models/Knight/knight_Attack2.bam",
@@ -28,7 +29,6 @@ class Knight(Player):
                              "Walk": "models/Knight/knight_Walk.bam",
                              "Jump": "models/Knight/knight_Jump.bam"
                              })
-        super().__init__(self.player_num, self.base)
         #self.character.setPos(-100, 0, 0)
         #self.character.setScale(200)
         #self.c_capsule = CollisionSphere(0.5, -0.4, 0.8, 0.25)
