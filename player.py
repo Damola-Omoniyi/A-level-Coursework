@@ -101,6 +101,10 @@ class Player(FSM):
             self.base.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
             self.base.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
             self.base.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
+
+    # The group of methods below are dedicated to the FSM 
+    # enter-state and exit-state
+        
     def enterIdle(self):
         self.character.loop("Idle")
 
@@ -175,10 +179,13 @@ class Player(FSM):
 
     def enterSpecial1(self):
         self.character.play("Special1")
+
     def enterSpecial2(self):
         self.character.play("Special2")
+   
     def exitSpecial1(self):
         self.character.stop()
+   
     def exitSpecial2(self):
         self.character.stop()
 
@@ -186,16 +193,21 @@ class Player(FSM):
         # MOVEMENT: Forward and backward
         dt = self.base.clock.dt  # delta time
         self.speed = 100  # This value determines how fast our player moves
-        print(f"character {self.player_num} : {self.character.getX()}")
 
         if self.is_moving:
             self.character.setX(self.character.getX() + self.direction * self.speed * dt)
         else:
             self.speed = 0
 
-        if self.character.getX() <= -650 or self.character.getX() >= 650:
-            self.no_speed()
-            # TODO Instead of just disabling speed disable movement in particular direction
+        # If a character has reached end the screen they can no longer move
+        if self.character.getX() <= -650: 
+            if self.direction == -1:
+                self.no_speed()
+        
+        if self.character.getX() >= 650:
+            if self.direction == 1:
+                self.no_speed()
+            
         return task.cont
 
     def print_x(self):
@@ -218,28 +230,21 @@ class Player(FSM):
         self.request("Idle")
 
     def no_speed(self, a=0):
-        #print("donein")
         self.is_moving = False
         self.speed = 0
 
-        self.enemy.speed = 0
-        self.enemy.is_moving = False
-
-    def yes_speed(self, a=0):
-        #print("notdonin")
+    def set_speed(self, a=0):
         self.speed = 90
         self.enemy.speed = 90
-
-
 
     def setCollision(self, name):
         # name is the name (cnode2) of our opponents collision capsule.
         self.sphere_nodepath.node().addSolid(self.c_sphere)
         # Uncomment this line to show the collision solid
-        self.sphere_nodepath.show()
+        # self.sphere_nodepath.show()
 
         self.base.accept(f'{self.sphere_name}-into-{name}', self.no_speed)
         self.base.accept(f'{self.sphere_name}-again-{name}', self.no_speed)
-        self.base.accept(f'{self.sphere_name}-out-{name}', self.yes_speed)
+        self.base.accept(f'{self.sphere_name}-out-{name}', self.set_speed)
 
 
