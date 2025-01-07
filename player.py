@@ -233,18 +233,15 @@ class Player(FSM):
         self.is_moving = False
         self.speed = 0
 
-
     def set_speed(self, a=0):
         self.speed = 90
         self.enemy.speed = 90
-
-
 
     def setCollision(self, name):
         # name is the name (cnode2) of our opponents collision capsule.
         self.sphere_nodepath.node().addSolid(self.c_sphere)
         # Uncomment this line to show the collision solid
-        self.sphere_nodepath.show()
+        # self.sphere_nodepath.show()
 
         self.base.accept(f'{self.sphere_name}-into-{name}', self.no_speed)
         self.base.accept(f'{self.sphere_name}-again-{name}', self.no_speed)
