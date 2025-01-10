@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="5df144d0-e185-4bf8-ba35-4cf0022aefdd" name="Changes" comment="So just added the code for the FSM bits">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controls.py" beforeDir="false" afterPath="$PROJECT_DIR$/controls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crypto.py" beforeDir="false" afterPath="$PROJECT_DIR$/crypto.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/knight.py" beforeDir="false" afterPath="$PROJECT_DIR$/knight.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player-e.py" beforeDir="false" afterPath="$PROJECT_DIR$/player-e.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,6 +40,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ToolWindowRun.ShowToolbar": "false",
     "git-widget-placeholder": "development",
     "last_opened_file_path": "C:/Users/adeda/USBDRIVED/A level Coursework/Game-Name-EXPERIMENTING/A-level-Coursework/models"
   }

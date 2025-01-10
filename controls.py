@@ -50,4 +50,3 @@ class Controller:
         self.gamepad = self.gamepads[gamepad_no]
         gamepad_name = f"gamepad{gamepad_no}"
         self.base.attachInputDevice(self.gamepad, prefix=gamepad_name)
-        print(self.gamepads)

@@ -32,12 +32,6 @@ class Crypto(Player):
                              "Jump": "models/Crypto/Crypto_Jump.bam"
                              })
 
-
-        # self.character.setPos(500, 0, 0)
-        #self.player.setScale(200)
-        #self.c_capsule = CollisionSphere(0.5, -0.4, 0.8, 0.25)
-        #self.c_segment = CollisionSegment(0, 0.5, 1, 0, -0.5, 1)
-        #self.atk_sound = self.base.loader.loadSfx("models/qubodupPunch/qubodupPunch/qubodupPunch01.ogg")
         self.ranges = {
             "Attack1": [358.362060546875, 0.25],
             "Attack2": [433.4682922363281, 0.25],

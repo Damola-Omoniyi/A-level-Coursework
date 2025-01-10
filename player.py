@@ -16,6 +16,11 @@ class Player(FSM):
         self.is_moving = False
         self.speed = 0
         self.direction = 0
+        self.health = 100  # Players health
+        self.distance = 0  # The distance attribute measures the distance between both players in each frame
+        # The ranges dictionary contains the appropriate striking distance for each move, unique to all players and not
+        # included here in the Super class
+        self.ranges = {}
         self.c_sphere = CollisionSphere(0, 0, 1, 0.25)
         self.sphere_name = f"cnode{self.player_num}"  # player1's name would be cnode1
         self.sphere_nodepath = None
@@ -48,6 +53,7 @@ class Player(FSM):
             self.character.setX(200)
         self.request("Idle")
         self.base.taskMgr.add(self.move_task, "move_task")
+        self.base.taskMgr.add(self.attack_task, "attack_task")
 
     def set_controls(self):
         if self.gamepad_no == 2:
@@ -58,10 +64,10 @@ class Player(FSM):
             self.base.accept('arrow_up', print, ["arrow-up"])
             self.base.accept("arrow_down", print, ["arrow-down"])
             self.base.accept("arrow_down-up", print, ["arrow-down-up"])
-            self.base.accept("w", print, ["w"])
-            self.base.accept("a", print, ["a"])
-            self.base.accept('s', print, ["s"])
-            self.base.accept('d', print, ["d"])
+            self.base.accept("w", self.Attack, ['Attack1'])
+            self.base.accept("a", self.Attack, ['Attack2'])
+            self.base.accept('s', self.Attack, ['Attack3'])
+            self.base.accept('d', self.Attack, ['Attack4'])
             self.base.accept('x', print, ["x"])
             self.base.accept('y', print, ["y"])
 
@@ -69,11 +75,10 @@ class Player(FSM):
             # If gamepad number is less than 2 that means our user is using a pc controller not the keyboard or AI
             self.base.controls.set_game_controls(self.gamepad_no)
             gamepad_name = f"gamepad{self.gamepad_no}"
-            print(gamepad_name)
-            self.base.accept(f"{gamepad_name}-face_x", print, ["x"])
-            self.base.accept(f"{gamepad_name}-face_a", print, ["a"])
-            self.base.accept(f"{gamepad_name}-face_b", print, ["b"])
-            self.base.accept(f"{gamepad_name}-face_y", print, ["y"])
+            self.base.accept(f"{gamepad_name}-face_x", self.Attack, ['Attack1'])
+            self.base.accept(f"{gamepad_name}-face_a", self.Attack, ['Attack2'])
+            self.base.accept(f"{gamepad_name}-face_b", self.Attack, ['Attack3'])
+            self.base.accept(f"{gamepad_name}-face_y", self.Attack, ['Attack4'])
             self.base.accept(f"{gamepad_name}-dpad_up", print, ["up"])
             self.base.accept(f"{gamepad_name}-dpad_down", print, ["down"])
             self.base.accept(f"{gamepad_name}-dpad_down-up", print, ["down-up"])
@@ -182,16 +187,44 @@ class Player(FSM):
         # If a character has reached end the screen they can no longer move
         if self.character.getX() <= -650: 
             if self.direction == -1:
-                self.no_speed()
+                self.null_speed()
         
         if self.character.getX() >= 650:
             if self.direction == 1:
-                self.no_speed()
+                self.null_speed()
             
         return task.cont
 
-    def print_x(self):
-        print(f"character {self.player_num}: {self.character.getX()}")
+    def attack_task(self, task):
+        dt = self.base.clock.dt  # delta time
+        current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
+        self.record()  # Records the distance between the 2 players
+        #if self.health <= 0:
+         #   self.request('Death')
+          #  self.player.hide()
+        if current_anim is None:
+            # if self.health is None:
+                #if self.health <= 0:
+                 #   self.request('Death')
+                  #  self.player.hide()
+                    # If no animation is playing and health is empty hide actor
+            # else:
+            self.request("Idle")
+
+        if current_anim in ['Attack1', 'Attack2', 'Attack3', 'Attack4']:
+            self.ignoreAll()  # If an attack has been engaged some controls are ignored till the attack is complete
+            if self.speed != 0:
+                self.speed -= 90  # Players speed is reduced to 0 so no movement until attack complete
+
+        elif current_anim in ["Idle", "Walk"]:
+            self.set_controls()  # Allow controls if player is idle or just walking
+        return task.cont
+
+    def record(self):
+        pos1 = self.character.getX()  # Player's position
+        pos2 = self.enemy.character.getX()  # Enemy's position
+        self.distance = abs(pos2 - pos1)
+
 
     def walk_forward(self):
         self.is_moving = True
@@ -209,7 +242,7 @@ class Player(FSM):
         self.direction = 0
         self.request("Idle")
 
-    def no_speed(self, a=0):
+    def null_speed(self, a=0):
         self.is_moving = False
         self.speed = 0
 
@@ -225,8 +258,32 @@ class Player(FSM):
         # Uncomment this line to show the collision solid
         # self.sphere_nodepath.show()
 
-        self.base.accept(f'{self.sphere_name}-into-{name}', self.no_speed)
-        self.base.accept(f'{self.sphere_name}-again-{name}', self.no_speed)
+        self.base.accept(f'{self.sphere_name}-into-{name}', self.null_speed)
+        self.base.accept(f'{self.sphere_name}-again-{name}', self.null_speed)
         self.base.accept(f'{self.sphere_name}-out-{name}', self.set_speed)
+
+    def Attack(self, attack):
+        # Load an MP3 file as sound effect
+        # self.atk_sound.play()
+        # Load an MP3 file as background music
+
+        self.request(attack)  # Play animation
+        self.is_moving = False  # Stop movement
+        if self.distance <= self.ranges[attack][0]: # and self.enemy.is_blocking is False:
+            # An attack is valid if enemy is not blocking and within range
+            # print(self.ranges[attack][0])
+            # print("hit is valid")
+            self.enemy.health -= 5
+            # self.power += 12.5
+            self.base.taskMgr.doMethodLater(self.ranges[attack][1], self.react, 'reaction time')
+            # Calls the React function after an appropriate time has elapsed
+
+    def react(self, task):
+        dt = self.base.clock.dt
+        self.enemy.request("Impact")  # Plays animation for when a hit is registered
+        # sound = self.base.loader.loadSfx("models/gruntsound.wav")
+        # sound.play()
+        # self.enemy.player.setX(self.player.getX() + 1 * 20 * dt)
+        return task.done
 
 

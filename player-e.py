@@ -62,7 +62,7 @@ class Player(FSM):
 
 # ----------------------------------------------------------------------------------------------------------------------
         self.base.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": False, "CPU": False}
-        self.gamepad_no = self.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
+        self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
         if self.gamepad_no is not False:
             self.base.controls.set_game_controls(self.gamepad_no)
             gamepad_name = f"gamepad{self.gamepad_no}"

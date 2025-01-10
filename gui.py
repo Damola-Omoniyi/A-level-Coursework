@@ -274,6 +274,7 @@ class GUI:
         self.set_model(x_position) # Set new character model to be displayed
 
     def next_menu(self, player_num, player, controller):
+        self.model.hide()
         if self.base.controls.check_valid_controls(controller["text"]): # First check if control selected is valid
             if player_num == 1:
                 self.select_character2_menu()

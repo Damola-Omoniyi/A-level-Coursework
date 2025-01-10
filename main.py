@@ -28,7 +28,7 @@ class Main(ShowBase):
         self.accept("p",  self.UI.pause_menu)
         self.accept("x",  self.UI.end_round_menu)
 
-        self.player_data = [[], []] # Data about each player player number, character used and controller
+        self.player_data = [[], []] # Data about each player,  player number, character used and controller
         self.game_started = False # Set to true when main game loop starts
 
         self.taskMgr.add(self.check_start_game, "START")
@@ -79,7 +79,7 @@ class Main(ShowBase):
         self.player1.start()
         self.player2.start()
 
-        #self.taskMgr.add(self.update_cam, "update-camera")
+        self.taskMgr.add(self.update_cam, "update-camera")
     
     def set_collisions(self):
         self.player2.setCollision(self.player1.sphere_name)
