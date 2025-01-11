@@ -80,7 +80,8 @@ class Main(ShowBase):
         self.player2.start()
 
         self.taskMgr.add(self.update_cam, "update-camera")
-    
+        self.taskMgr.add(self.update_gui, "update")
+
     def set_collisions(self):
         self.player2.setCollision(self.player1.sphere_name)
         self.player1.setCollision(self.player2.sphere_name)
@@ -100,7 +101,6 @@ class Main(ShowBase):
     # TODO: Fix this please
     def update_music(self, task):
             # print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
-
             for song in self.music:
                 if self.can_play_song:
                     #print(song)
@@ -116,6 +116,18 @@ class Main(ShowBase):
                     # else:
                     #    self.can_play_song = True
             return  task.cont
+
+    def update_gui(self, task):
+        # time = f"{int(task.time)}"
+        # self.UI.lbl_time["text"] = time
+        self.UI.bar_health_player1["value"] = self.player1.health
+        self.UI.bar_health_player2["value"] = self.player2.health
+
+        self.UI.bar_power_player1["value"] = self.player1.power
+        self.UI.bar_power_player2["value"] = self.player2.power
+
+        return task.cont
+
 
     def load_scene(self, scene_id):
         if scene_id == 1:

@@ -274,7 +274,6 @@ class GUI:
         self.set_model(x_position) # Set new character model to be displayed
 
     def next_menu(self, player_num, player, controller):
-        self.model.hide()
         if self.base.controls.check_valid_controls(controller["text"]): # First check if control selected is valid
             if player_num == 1:
                 self.select_character2_menu()
@@ -307,6 +306,7 @@ class GUI:
 # ----------------------------------------------------------------------------------------------------------------------
 
     def select_scene_menu(self):
+        self.model.hide()
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1), frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
         self.frm_current = frm_main
@@ -319,7 +319,7 @@ class GUI:
         lbl_select_scene = DirectLabel(text="select a stage", parent=frm_main, pos=(0, 0, 0.75),
                                        frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15)
         btn_start_game = DirectButton(text="Start Game", parent=frm_main, pos=(0, 0, -0.85),
-                                      command = self.base.start_game,frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1),
+                                      command= self.base.start_game,frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1),
                                       scale=0.15)
 
     def set_scene(self, scene):

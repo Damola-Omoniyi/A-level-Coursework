@@ -321,7 +321,7 @@ class Player(FSM):
         return task.cont
 
 # ----------------------------------------------------------------------------------------------------------------------
- # MOVEMENT: Jumping
+# MOVEMENT: Jumping
     def jump_task(self, task):
         dt = self.base.clock.dt  # delta time
         self.ignore_all()

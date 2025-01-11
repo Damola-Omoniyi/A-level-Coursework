@@ -3,19 +3,20 @@ from direct.actor.Actor import Actor
 from direct.fsm.FSM import FSM
 from panda3d.core import *
 
+
 class Player(FSM):
     def __init__(self, player_num, base):
         FSM.__init__(self, "character-FSM")
-
         self.base = base
         self.player_num = player_num
         self.enemy = None
         self.character = None
-
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
-        self.is_moving = False
+        self.is_moving = False  #
+        self.is_blocking = False  # Value that determines if a player is blocking or not
         self.speed = 0
         self.direction = 0
+        self.power = 0
         self.health = 100  # Players health
         self.distance = 0  # The distance attribute measures the distance between both players in each frame
         # The ranges dictionary contains the appropriate striking distance for each move, unique to all players and not
@@ -31,7 +32,6 @@ class Player(FSM):
         a_light = AmbientLight('a_light')
         d_light_np = self.base.render.attachNewNode(d_light)
         a_light_np = self.base.render.attachNewNode(a_light)
-
         d_light.setColor((2, 2, 2, 1))
         a_light.setColor((0.5, 0.5, 0.5, 1))
         d_light_np.setHpr(-60, -30, 10)
@@ -39,6 +39,8 @@ class Player(FSM):
         self.base.render.setLight(a_light_np)
 
     def start(self):
+        if self.gamepad_no < 2:
+            self.base.controls.set_game_controls(self.gamepad_no)
         self.set_controls()
         self.character.reparentTo(self.base.render)
         self.character.setScale(200)
@@ -57,35 +59,34 @@ class Player(FSM):
 
     def set_controls(self):
         if self.gamepad_no == 2:
-            self.base.accept("arrow_right", self.walk_forward)
-            self.base.accept("arrow_left", self.walk_backward)
-            self.base.accept('arrow_left-up', self.stop_walk)
-            self.base.accept('arrow_right-up', self.stop_walk)
-            self.base.accept('arrow_up', print, ["arrow-up"])
-            self.base.accept("arrow_down", print, ["arrow-down"])
-            self.base.accept("arrow_down-up", print, ["arrow-down-up"])
-            self.base.accept("w", self.Attack, ['Attack1'])
-            self.base.accept("a", self.Attack, ['Attack2'])
-            self.base.accept('s', self.Attack, ['Attack3'])
-            self.base.accept('d', self.Attack, ['Attack4'])
-            self.base.accept('x', print, ["x"])
-            self.base.accept('y', print, ["y"])
+            self.accept("arrow_right", self.walk_forward)
+            self.accept("arrow_left", self.walk_backward)
+            self.accept('arrow_left-up', self.stop_walk)
+            self.accept('arrow_right-up', self.stop_walk)
+            self.accept('arrow_up', print, ["arrow-up"])
+            self.accept("arrow_down", self.block, [True])
+            self.accept("arrow_down-up", self.block, [False])
+            self.accept("w", self.Attack, ['Attack1'])
+            self.accept("a", self.Attack, ['Attack2'])
+            self.accept('s', self.Attack, ['Attack3'])
+            self.accept('d', self.Attack, ['Attack4'])
+            self.accept('x', print, ["x"])
+            self.accept('y', print, ["y"])
 
         elif self.gamepad_no < 2:
             # If gamepad number is less than 2 that means our user is using a pc controller not the keyboard or AI
-            self.base.controls.set_game_controls(self.gamepad_no)
             gamepad_name = f"gamepad{self.gamepad_no}"
-            self.base.accept(f"{gamepad_name}-face_x", self.Attack, ['Attack1'])
-            self.base.accept(f"{gamepad_name}-face_a", self.Attack, ['Attack2'])
-            self.base.accept(f"{gamepad_name}-face_b", self.Attack, ['Attack3'])
-            self.base.accept(f"{gamepad_name}-face_y", self.Attack, ['Attack4'])
-            self.base.accept(f"{gamepad_name}-dpad_up", print, ["up"])
-            self.base.accept(f"{gamepad_name}-dpad_down", print, ["down"])
-            self.base.accept(f"{gamepad_name}-dpad_down-up", print, ["down-up"])
-            self.base.accept(f"{gamepad_name}-dpad_left", self.walk_backward)
-            self.base.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
-            self.base.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
-            self.base.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
+            self.accept(f"{gamepad_name}-face_x", self.Attack, ['Attack1'])
+            self.accept(f"{gamepad_name}-face_a", self.Attack, ['Attack2'])
+            self.accept(f"{gamepad_name}-face_b", self.Attack, ['Attack3'])
+            self.accept(f"{gamepad_name}-face_y", self.Attack, ['Attack4'])
+            self.accept(f"{gamepad_name}-dpad_up", print, ["up"])
+            self.accept(f"{gamepad_name}-dpad_down", self.block, [True])
+            self.accept(f"{gamepad_name}-dpad_down-up", self.block, [False])
+            self.accept(f"{gamepad_name}-dpad_left", self.walk_backward)
+            self.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
+            self.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
+            self.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
 
     # The group of methods below are dedicated to the FSM 
     # enter-state and exit-state
@@ -192,39 +193,33 @@ class Player(FSM):
         if self.character.getX() >= 650:
             if self.direction == 1:
                 self.null_speed()
-            
         return task.cont
 
     def attack_task(self, task):
         dt = self.base.clock.dt  # delta time
         current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
         self.record()  # Records the distance between the 2 players
-        #if self.health <= 0:
-         #   self.request('Death')
-          #  self.player.hide()
         if current_anim is None:
-            # if self.health is None:
-                #if self.health <= 0:
-                 #   self.request('Death')
-                  #  self.player.hide()
-                    # If no animation is playing and health is empty hide actor
-            # else:
-            self.request("Idle")
-
+            if self.health <= 0:
+                self.request('Death')
+                self.character.hide()
+                # If no animation is playing and health is empty hide actor
+            else:
+                self.request("Idle")
         if current_anim in ['Attack1', 'Attack2', 'Attack3', 'Attack4']:
-            self.ignoreAll()  # If an attack has been engaged some controls are ignored till the attack is complete
+            self.ignoreAll()
+            #   # If an attack has been engaged some controls are ignored till the attack is complete
             if self.speed != 0:
                 self.speed -= 90  # Players speed is reduced to 0 so no movement until attack complete
-
         elif current_anim in ["Idle", "Walk"]:
             self.set_controls()  # Allow controls if player is idle or just walking
+            # print("unlock")
         return task.cont
 
     def record(self):
         pos1 = self.character.getX()  # Player's position
         pos2 = self.enemy.character.getX()  # Enemy's position
         self.distance = abs(pos2 - pos1)
-
 
     def walk_forward(self):
         self.is_moving = True
@@ -251,13 +246,11 @@ class Player(FSM):
         self.enemy.speed = 90
 
     def setCollision(self, name):
-
         self.sphere_nodepath = self.character.attachNewNode(CollisionNode(self.sphere_name))
         # name is the name (cnode2) of our opponents collision capsule.
         self.sphere_nodepath.node().addSolid(self.c_sphere)
         # Uncomment this line to show the collision solid
         # self.sphere_nodepath.show()
-
         self.base.accept(f'{self.sphere_name}-into-{name}', self.null_speed)
         self.base.accept(f'{self.sphere_name}-again-{name}', self.null_speed)
         self.base.accept(f'{self.sphere_name}-out-{name}', self.set_speed)
@@ -266,17 +259,22 @@ class Player(FSM):
         # Load an MP3 file as sound effect
         # self.atk_sound.play()
         # Load an MP3 file as background music
-
         self.request(attack)  # Play animation
         self.is_moving = False  # Stop movement
-        if self.distance <= self.ranges[attack][0]: # and self.enemy.is_blocking is False:
+        if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False:
             # An attack is valid if enemy is not blocking and within range
-            # print(self.ranges[attack][0])
-            # print("hit is valid")
             self.enemy.health -= 5
-            # self.power += 12.5
+            self.power += 12.5
             self.base.taskMgr.doMethodLater(self.ranges[attack][1], self.react, 'reaction time')
             # Calls the React function after an appropriate time has elapsed
+
+    def block(self, state):
+        self.is_blocking = state
+        self.is_moving = False
+        if state:
+            self.request("Block")
+        else:
+            self.request("Idle")
 
     def react(self, task):
         dt = self.base.clock.dt
