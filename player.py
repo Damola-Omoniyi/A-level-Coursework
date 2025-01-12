@@ -18,6 +18,7 @@ class Player(FSM):
         self.direction = 0
         self.power = 0
         self.health = 100  # Players health
+        self.is_dead = False
         self.distance = 0  # The distance attribute measures the distance between both players in each frame
         # The ranges dictionary contains the appropriate striking distance for each move, unique to all players and not
         # included here in the Super class
@@ -56,6 +57,7 @@ class Player(FSM):
         self.request("Idle")
         self.base.taskMgr.add(self.move_task, "move_task")
         self.base.taskMgr.add(self.attack_task, "attack_task")
+        self.base.taskMgr.add(self.death_task, "death_task")
 
     def set_controls(self):
         if self.gamepad_no == 2:
@@ -199,13 +201,7 @@ class Player(FSM):
         dt = self.base.clock.dt  # delta time
         current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
         self.record()  # Records the distance between the 2 players
-        if current_anim is None:
-            if self.health <= 0:
-                self.request('Death')
-                self.character.hide()
-                # If no animation is playing and health is empty hide actor
-            else:
-                self.request("Idle")
+
         if current_anim in ['Attack1', 'Attack2', 'Attack3', 'Attack4']:
             self.ignoreAll()
             #   # If an attack has been engaged some controls are ignored till the attack is complete
@@ -214,6 +210,20 @@ class Player(FSM):
         elif current_anim in ["Idle", "Walk"]:
             self.set_controls()  # Allow controls if player is idle or just walking
             # print("unlock")
+        return task.cont
+
+    def death_task(self, task):
+        if self.character.getCurrentAnim() is None:
+            if self.health <= 0 and not self.is_dead:
+                self.request('Death')
+                self.is_dead = True
+                # self.base.taskMgr.remove("death_task")
+                # self.character.hide()
+                # If no animation is playing and health is empty hide actor
+            else:
+                if not self.is_dead:
+                    self.request("Idle")
+
         return task.cont
 
     def record(self):
