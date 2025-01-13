@@ -237,7 +237,7 @@ class Player(FSM):
             self.character.setZ(self.character.getZ() + height * dt)
         elif task.time > 1.0:
             self.character.setZ(self.z_pos)
-            self.base.taskMgr.remove("jump-task")
+            self.base.taskMgr.remove(f"jump-task{self.player_num}")
             self.set_controls()
             self.is_jumping = False
         return task.cont
@@ -249,7 +249,7 @@ class Player(FSM):
             self.is_jumping = True
             self.request("Jump")
             self.z_pos = self.character.getZ()
-            self.base.taskMgr.add(self.jump_task,"jump-task")
+            self.base.taskMgr.add(self.jump_task,f"jump-task{self.player_num}")
     def end_player(self):
         self.ignoreAll()
         self.base.taskMgr.remove("move_task")
