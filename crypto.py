@@ -26,8 +26,8 @@ class Crypto(Player):
                              "Special1": "models/Crypto/Crypto_Special1.bam",
                              "Special2": "models/Crypto/Crypto_Special2.bam",
                              "Attack3": "models/Crypto/Crypto_Special3.bam",
-                             "Special1": "models/Crypto/Crypto_Special4.bam",
-                             "Special2": "models/Crypto/Crypto_Special5.bam",
+                             "Special3": "models/Crypto/Crypto_Special4.bam",
+                             "Special4": "models/Crypto/Crypto_Special5.bam",
                              "Walk": "models/Crypto/Crypto_Walk.bam",
                              "Jump": "models/Crypto/Crypto_Jump.bam"
                              })

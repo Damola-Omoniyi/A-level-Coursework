@@ -377,7 +377,7 @@ class GUI:
         self.frm_current.hide()
         self.frm_current = frm_title
 
-        lbl_title = DirectLabel(text="PLAYER ONE WINS",
+        lbl_title = DirectLabel(text=f"{self.base.winner} WINS",
                                 parent=frm_title,
                                 text_fg=(1, 0, 0, 1),
                                 pos=(0, 0, 0.2),

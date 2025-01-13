@@ -14,6 +14,7 @@ class Player(FSM):
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
         self.is_moving = False  #
         self.is_blocking = False  # Value that determines if a player is blocking or not
+        self.is_jumping = False  # This value shows that a player is currently jumping
         self.speed = 0
         self.direction = 0
         self.power = 0
@@ -65,7 +66,7 @@ class Player(FSM):
             self.accept("arrow_left", self.walk_backward)
             self.accept('arrow_left-up', self.stop_walk)
             self.accept('arrow_right-up', self.stop_walk)
-            self.accept('arrow_up', print, ["arrow-up"])
+            self.accept('arrow_up', self.jump)
             self.accept("arrow_down", self.block, [True])
             self.accept("arrow_down-up", self.block, [False])
             self.accept("w", self.Attack, ['Attack1'])
@@ -82,7 +83,7 @@ class Player(FSM):
             self.accept(f"{gamepad_name}-face_a", self.Attack, ['Attack2'])
             self.accept(f"{gamepad_name}-face_b", self.Attack, ['Attack3'])
             self.accept(f"{gamepad_name}-face_y", self.Attack, ['Attack4'])
-            self.accept(f"{gamepad_name}-dpad_up", print, ["up"])
+            self.accept(f"{gamepad_name}-dpad_up",self.jump)
             self.accept(f"{gamepad_name}-dpad_down", self.block, [True])
             self.accept(f"{gamepad_name}-dpad_down-up", self.block, [False])
             self.accept(f"{gamepad_name}-dpad_left", self.walk_backward)
@@ -209,7 +210,6 @@ class Player(FSM):
                 self.speed -= 90  # Players speed is reduced to 0 so no movement until attack complete
         elif current_anim in ["Idle", "Walk"]:
             self.set_controls()  # Allow controls if player is idle or just walking
-            # print("unlock")
         return task.cont
 
     def death_task(self, task):
@@ -217,14 +217,46 @@ class Player(FSM):
             if self.health <= 0 and not self.is_dead:
                 self.request('Death')
                 self.is_dead = True
-                # self.base.taskMgr.remove("death_task")
-                # self.character.hide()
+                self.base.game_ending = True
+                self.base.round_info[f'player{self.player_num}'] += 1
+                self.base.winner = f'player{self.player_num}'
                 # If no animation is playing and health is empty hide actor
             else:
                 if not self.is_dead:
                     self.request("Idle")
-
         return task.cont
+
+    def jump_task(self, task):
+        dt = self.base.clock.dt  # delta time
+        self.ignore_all()
+        if task.time < 0.5:
+            height = 500
+            self.character.setZ(self.character.getZ() + height * dt)
+        elif 0.5 < task.time < 1.0:
+            height = -500
+            self.character.setZ(self.character.getZ() + height * dt)
+        elif task.time > 1.0:
+            self.character.setZ(self.z_pos)
+            self.base.taskMgr.remove("jump-task")
+            self.set_controls()
+            self.is_jumping = False
+        return task.cont
+
+    def jump(self):
+        if not self.is_jumping:
+            print('jump', self.player_num)
+            # Prevents a player from jumping again while currently jumping
+            self.is_jumping = True
+            self.request("Jump")
+            self.z_pos = self.character.getZ()
+            self.base.taskMgr.add(self.jump_task,"jump-task")
+    def end_player(self):
+        self.ignoreAll()
+        self.base.taskMgr.remove("move_task")
+        self.base.taskMgr.remove("attack_task")
+        self.base.taskMgr.remove("death_task")
+
+
 
     def record(self):
         pos1 = self.character.getX()  # Player's position

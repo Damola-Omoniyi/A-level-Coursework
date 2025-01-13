@@ -25,8 +25,8 @@ class Main(ShowBase):
         self.is_game_mode_single_player = True  # Holds the value of the game mode True for single player
 
         # TODO: These are temporary lines of code only for testing to be removed
-        self.accept("p",  self.UI.pause_menu)
-        self.accept("x",  self.UI.end_round_menu)
+        # self.accept("p",  self.UI.pause_menu)
+        # self.accept("x",  self.UI.end_round_menu)
 
         self.player_data = [[], []] # Data about each player,  player number, character used and controller
         self.game_started = False # Set to true when main game loop starts
@@ -53,6 +53,11 @@ class Main(ShowBase):
         self.trav = CollisionTraverser()
         self.cTrav = self.trav
 
+        self.round_info = {"player1":0, "player2":0}
+        self.game_ending = False
+        self.round = 1  # Rounds 1, 2 or 3
+        self.winner = ""
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -61,6 +66,16 @@ class Main(ShowBase):
             self.start_game()
             self.taskMgr.remove("START")  # Remove this task after game starts so as not to waste processing power
         return task.cont
+
+    def check_end_game(self, task):
+        if self.game_ending:
+            self.taskMgr.remove("move_task")
+            self.taskMgr.remove("death_task")
+            self.taskMgr.remove("attack_task")
+            self.ignoreAll()
+            self.UI.end_round_menu()
+
+
 
     def start_game(self):
         self.UI.frm_current.hide()
@@ -81,6 +96,7 @@ class Main(ShowBase):
 
         self.taskMgr.add(self.update_cam, "update-camera")
         self.taskMgr.add(self.update_gui, "update")
+        #  self.taskMgr.add(self.check_end_game, "end_game_task")
 
     def set_collisions(self):
         self.player2.setCollision(self.player1.sphere_name)
