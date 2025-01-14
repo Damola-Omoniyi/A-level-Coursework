@@ -267,11 +267,13 @@ class Player(FSM):
         self.is_moving = True
         self.direction = 1
         self.request("Walk")
+        # Here add the walk task 
 
     def walk_backward(self):
         self.is_moving = True
         self.direction = -1
         self.request("Walkback")
+        # Here remove the walk task might be more efficient as task is not running always.
 
     def stop_walk(self):
         # Activated when a player takes their hand off the move buttons
