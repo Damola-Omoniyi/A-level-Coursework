@@ -122,6 +122,17 @@ class Player(FSM):
             self.accept('g', self.Attack, ['Attack3'])
             self.accept('h', self.Attack, ['Attack4'])  # come to this on a special knight class and add motion
             self.accept('y', self.special)
+            '''THIS SHALL REVOLUTIONIZE OUR AI 
+             class Test(DirectObject):
+    def __init__(self):
+        self.accept('spam', self.on_spam, ['eggs', 'sausage'])
+
+    def on_spam(self, a, b, c, d):
+        print(a, b, c, d)
+
+test = Test()
+messenger.send('spam', ['foo', 'bar'])
+base.run()'''
 
         #print(self.base.player_data[0][2])
         #print("controls should set up")
