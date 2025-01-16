@@ -82,7 +82,7 @@ class Player(FSM, DirectObject.DirectObject):
     def set_controls(self):
         if self.gamepad_no == 2:
             self.accept("arrow_right", self.walk_forward)
-            self.accept("arrow_left", self.walk_backward)
+            self.base.accept("arrow_left", self.walk_backward)
             self.accept('arrow_left-up', self.stop_walk)
             self.accept('arrow_right-up', self.stop_walk)
             self.accept('arrow_up', self.jump)
