@@ -3,10 +3,13 @@ from panda3d.core import *
 from direct.actor.Actor import Actor
 from player import Player
 
+
 class Crypto(Player):
     def __init__(self, player_num, base):
         self.player_num = player_num
         self.base = base
+        super().__init__(self.player_num, self.base)
+
         self.character = Actor("models/Crypto/Crypto.bam",
                             {"Attack1": "models/Crypto/Crypto_Attack1.bam",
                              "Attack2": "models/Crypto/Crypto_Attack2.bam",
@@ -23,18 +26,12 @@ class Crypto(Player):
                              "Special1": "models/Crypto/Crypto_Special1.bam",
                              "Special2": "models/Crypto/Crypto_Special2.bam",
                              "Attack3": "models/Crypto/Crypto_Special3.bam",
-                             "Special1": "models/Crypto/Crypto_Special4.bam",
-                             "Special2": "models/Crypto/Crypto_Special5.bam",
+                             "Special3": "models/Crypto/Crypto_Special4.bam",
+                             "Special4": "models/Crypto/Crypto_Special5.bam",
                              "Walk": "models/Crypto/Crypto_Walk.bam",
                              "Jump": "models/Crypto/Crypto_Jump.bam"
                              })
-        super().__init__(self.player_num, self.base)
 
-        self.player.setPos(300, 0, 0)
-        #self.player.setScale(200)
-        #self.c_capsule = CollisionSphere(0.5, -0.4, 0.8, 0.25)
-        #self.c_segment = CollisionSegment(0, 0.5, 1, 0, -0.5, 1)
-        #self.atk_sound = self.base.loader.loadSfx("models/qubodupPunch/qubodupPunch/qubodupPunch01.ogg")
         self.ranges = {
             "Attack1": [358.362060546875, 0.25],
             "Attack2": [433.4682922363281, 0.25],

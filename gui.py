@@ -91,19 +91,19 @@ class GUI:
                                 relief="flat",
                                 command=self.game_mode_menu)
 
-        btn_credits = DirectButton(text="CREDITS",
+        '''btn_credits = DirectButton(text="CREDITS",
                                    parent=frm_main_menu,
                                    scale=0.15,
                                    pos=(0, 0, 0.2),
                                    text_fg=(1, 0, 0, 1),
                                    frameColor=(1, 1, 1, 1),
                                    relief="flat",
-                                   command=None)
+                                   command=None)'''
 
         btn_settings = DirectButton(text="SETTINGS",
                                     parent=frm_main_menu,
                                     scale=0.15,
-                                    pos=(0, 0, -0.1),
+                                    pos=(0, 0, 0.2),
                                     text_fg=(1, 0, 0, 1),
                                     frameColor=(1, 1, 1, 1),
                                     relief="flat",
@@ -112,18 +112,20 @@ class GUI:
         btn_back = DirectButton(text="BACK",
                                 parent=frm_main_menu,
                                 scale=0.15,
-                                pos=(0, 0, -0.4),
+                                pos=(0, 0, -0.1),
                                 text_fg=(1, 0, 0, 1),
                                 frameColor=(1, 1, 1, 1),
                                 relief="flat",
                                 command=self.title_menu)
 
     def game_mode_menu(self):
+        self.base.player_data = [[], []]
         self.base.controls.reset()  # reset controls after back button brings you here
 
         frm_game_mode_menu = DirectFrame(frameSize=(-2, 2, -1, 1),
                                          frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
+
         self.frm_current = frm_game_mode_menu
 
         btn_single_player = DirectButton(text="SINGLE PLAYER",
@@ -133,7 +135,9 @@ class GUI:
                                          text_fg=(1, 0, 0, 1),
                                          frameColor=(1, 1, 1, 1),
                                          relief="flat",
-                                         command=self.set_game_mode)
+                                         command=self.set_game_mode,
+                                         extraArgs=[True]
+                                         )
 
         btn_multi_player = DirectButton(text="PLAYER VS PLAYER",
                                         parent=frm_game_mode_menu,
@@ -173,6 +177,8 @@ class GUI:
         # positions the model being displayed
         self.model.loop("Idle")
         self.model.setScale(25)
+        # self.model.setScale(25)
+
         self.model.setPos(x_position, 120, -25)
         self.model.reparentTo(self.base.render)
         self.set_model_light(x_position)
@@ -183,10 +189,9 @@ class GUI:
         self.frm_current.hide()
         frm_main = DirectFrame(frameColor=(0, 0, 0, 1), frameSize=(-2, 0, -1, 1))
         self.frm_current = frm_main
-        self.model = self.Knight
         self.set_model(35)
 
-        lbl_character = DirectLabel(text="Knight", parent=frm_main, pos=(-1, 0, -0.15),
+        lbl_character = DirectLabel(text=self.character, parent=frm_main, pos=(-1, 0, -0.15),
                                     frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.2)
 
         btn_previous_character = DirectButton(text="<", parent=frm_main, pos=(-1.75, 0, -0.15),
@@ -221,9 +226,8 @@ class GUI:
         self.frm_current.hide()
         frm_main = DirectFrame(frameColor=(0, 0, 0, 1), frameSize=(0, 2, -1, 1))
         self.frm_current = frm_main
-        self.model = self.Knight
         self.set_model(-35)
-        lbl_character = DirectLabel(text="Knight", parent=frm_main, pos=(1, 0, -0.15),
+        lbl_character = DirectLabel(text=self.character, parent=frm_main, pos=(1, 0, -0.15),
                                  frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.2)
 
         btn_previous_character = DirectButton(text=">", parent=frm_main, pos=(1.75, 0, -0.15),
@@ -266,12 +270,16 @@ class GUI:
 
     def change_character(self, direction, widget, x_position=35):
         self.model.hide()
-        character_index = (self.characters.index(self.character) + direction) % len(self.characters)
-        # If index greater than length of list cycle back to first character in list using modulus operator
-        self.character = self.characters[character_index]
-        widget["text"] = self.character # Change text of character label
+        current = self.characters.index(self.character)
+        character_index = current + direction
+        if character_index < len(self.characters) - 1:
+            self.character = self.characters[character_index]
+        else:
+            character_index = character_index % len(self.characters)
+            self.character = self.characters[character_index]
+        widget["text"] = self.character
         self.model = self.models[self.character]
-        self.set_model(x_position) # Set new character model to be displayed
+        self.set_model(x_position)
 
     def next_menu(self, player_num, player, controller):
         if self.base.controls.check_valid_controls(controller["text"]): # First check if control selected is valid
@@ -291,6 +299,7 @@ class GUI:
             # If the controls selected were invalid
             self.lbl_error.hide()
             self.lbl_error = DirectLabel(text=self.base.controls.error_msg, scale=0.1)
+
             self.base.taskMgr.add(self.show_error_msg, "error message")
 
     def show_error_msg(self, task):
@@ -306,6 +315,7 @@ class GUI:
 # ----------------------------------------------------------------------------------------------------------------------
 
     def select_scene_menu(self):
+        self.model.hide()
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1), frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
         self.frm_current = frm_main
@@ -318,7 +328,7 @@ class GUI:
         lbl_select_scene = DirectLabel(text="select a stage", parent=frm_main, pos=(0, 0, 0.75),
                                        frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1), scale=0.15)
         btn_start_game = DirectButton(text="Start Game", parent=frm_main, pos=(0, 0, -0.85),
-                                      command = self.base.start_game,frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1),
+                                      command= self.base.start_game,frameColor=(1, 0, 0, 1), text_fg=(0, 0, 0, 1),
                                       scale=0.15)
 
     def set_scene(self, scene):
@@ -333,6 +343,11 @@ class GUI:
         self.bar_power_player2.show()
 
     def pause_menu(self):
+        self.lbl_time.hide()
+        self.bar_health_player1.hide()
+        self.bar_health_player2.hide()
+        self.bar_power_player1.hide()
+        self.bar_power_player2.hide()
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1),
                                 frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
@@ -354,7 +369,12 @@ class GUI:
                                  pos=(0, 0, -0.5),
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
-                                 relief="flat")
+                                 relief="flat",
+                                  command = self.base.unpause_game)
+
+        def quit_command():
+            self.base.end_game()
+            self.main_menu()
 
         btn_quit = DirectButton(text="QUIT",
                                  parent=frm_main,
@@ -362,15 +382,22 @@ class GUI:
                                  pos=(0, 0, -0.75),
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
-                                 relief="flat")
+                                 relief="flat",
+                                command = quit_command)
 
     def end_round_menu(self):
+        self.lbl_time.hide()
+        self.bar_health_player1.hide()
+        self.bar_health_player2.hide()
+        self.bar_power_player1.hide()
+        self.bar_power_player2.hide()
+
         frm_title = DirectFrame(frameSize=(-2, 2, -1, 1),
                                 frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
         self.frm_current = frm_title
 
-        lbl_title = DirectLabel(text="PLAYER ONE WINS",
+        lbl_title = DirectLabel(text=f"{self.base.winner} WINS",
                                 parent=frm_title,
                                 text_fg=(1, 0, 0, 1),
                                 pos=(0, 0, 0.2),
@@ -387,7 +414,7 @@ class GUI:
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
                                  relief="flat",
-                                 command=self.main_menu)
+                                 command = self.title_menu )
     def settings_menu(self):
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1),
                                frameColor=(0, 0, 0, 1))
@@ -412,6 +439,4 @@ class GUI:
                                 relief="flat",
                                 command=self.title_menu)
 
-    def credits_menu(self):
-        pass
 

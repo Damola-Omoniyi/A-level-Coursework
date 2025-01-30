@@ -62,7 +62,7 @@ class Player(FSM):
 
 # ----------------------------------------------------------------------------------------------------------------------
         self.base.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": False, "CPU": False}
-        self.gamepad_no = self.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
+        self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
         if self.gamepad_no is not False:
             self.base.controls.set_game_controls(self.gamepad_no)
             gamepad_name = f"gamepad{self.gamepad_no}"
@@ -122,6 +122,17 @@ class Player(FSM):
             self.accept('g', self.Attack, ['Attack3'])
             self.accept('h', self.Attack, ['Attack4'])  # come to this on a special knight class and add motion
             self.accept('y', self.special)
+            '''THIS SHALL REVOLUTIONIZE OUR AI 
+             class Test(DirectObject):
+    def __init__(self):
+        self.accept('spam', self.on_spam, ['eggs', 'sausage'])
+
+    def on_spam(self, a, b, c, d):
+        print(a, b, c, d)
+
+test = Test()
+messenger.send('spam', ['foo', 'bar'])
+base.run()'''
 
         #print(self.base.player_data[0][2])
         #print("controls should set up")
@@ -321,7 +332,7 @@ class Player(FSM):
         return task.cont
 
 # ----------------------------------------------------------------------------------------------------------------------
- # MOVEMENT: Jumping
+# MOVEMENT: Jumping
     def jump_task(self, task):
         dt = self.base.clock.dt  # delta time
         self.ignore_all()
@@ -423,6 +434,7 @@ class Player(FSM):
         return task.cont
 
     def avg_distance(self, task):
+
         p1 = self.player.getX()  # Player's position
         p2 = self.enemy.player.getX()  # Enemy's position
         distance = abs(p2 - p1)
@@ -511,6 +523,7 @@ class Player(FSM):
         p1 = self.player.getX()  # Player's position
         p2 = enemy.player.getX()  # Enemy's position
         self.distance = abs(p2 - p1)
+
     def special(self, num="2"):
         if self.power>=100:
             self.power = 0

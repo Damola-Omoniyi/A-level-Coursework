@@ -49,5 +49,5 @@ class Controller:
     def set_game_controls(self, gamepad_no):
         self.gamepad = self.gamepads[gamepad_no]
         gamepad_name = f"gamepad{gamepad_no}"
+        #if self.gamepad not in self.base.devices.getDevices(InputDevice.DeviceClass.gamepad):
         self.base.attachInputDevice(self.gamepad, prefix=gamepad_name)
-        print(self.gamepads)
