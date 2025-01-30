@@ -37,5 +37,7 @@ class Crypto(Player):
             "Attack2": [433.4682922363281, 0.25],
             "Attack3": [358.3881530761719, 0.5],
             "Attack4": [282.9663848876953, 0.25]}
+        self.atk_sound =self.base.loader.loadSfx("models/qubodupPunch01.ogg")
+
 
 

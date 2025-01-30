@@ -32,6 +32,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.c_sphere = CollisionSphere(0, 0, 1, 0.25)
         self.sphere_name = f"cnode{self.player_num}"  # player1's name would be cnode1
         self.sphere_nodepath = None
+        self.atk_sound =self.base.loader.loadSfx("models/sword_sfx.wav")
         self.is_AI = False
         if self.base.is_game_mode_single_player and self.gamepad_no != 3:
             self.is_AI = False
@@ -276,7 +277,7 @@ class Player(FSM, DirectObject.DirectObject):
 
     def Attack(self, attack):
         # Load an MP3 file as sound effect
-        # self.atk_sound.play()
+        self.atk_sound.play()
         # Load an MP3 file as background music
         self.request(attack)  # Play animation
         self.is_moving = False  # Stop movement
@@ -292,8 +293,8 @@ class Player(FSM, DirectObject.DirectObject):
     def react(self, task):
         dt = self.base.clock.dt
         self.enemy.request("Impact")  # Plays animation for when a hit is registered
-        # sound = self.base.loader.loadSfx("models/gruntsound.wav")
-        # sound.play()
+        sound = self.base.loader.loadSfx("models/gruntsound.wav")
+        sound.play()
         # self.enemy.player.setX(self.player.getX() + 1 * 20 * dt)
         return task.done
 
