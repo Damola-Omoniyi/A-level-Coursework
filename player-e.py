@@ -434,6 +434,7 @@ base.run()'''
         return task.cont
 
     def avg_distance(self, task):
+
         p1 = self.player.getX()  # Player's position
         p2 = self.enemy.player.getX()  # Enemy's position
         distance = abs(p2 - p1)
@@ -522,6 +523,7 @@ base.run()'''
         p1 = self.player.getX()  # Player's position
         p2 = enemy.player.getX()  # Enemy's position
         self.distance = abs(p2 - p1)
+
     def special(self, num="2"):
         if self.power>=100:
             self.power = 0

@@ -91,19 +91,19 @@ class GUI:
                                 relief="flat",
                                 command=self.game_mode_menu)
 
-        btn_credits = DirectButton(text="CREDITS",
+        '''btn_credits = DirectButton(text="CREDITS",
                                    parent=frm_main_menu,
                                    scale=0.15,
                                    pos=(0, 0, 0.2),
                                    text_fg=(1, 0, 0, 1),
                                    frameColor=(1, 1, 1, 1),
                                    relief="flat",
-                                   command=None)
+                                   command=None)'''
 
         btn_settings = DirectButton(text="SETTINGS",
                                     parent=frm_main_menu,
                                     scale=0.15,
-                                    pos=(0, 0, -0.1),
+                                    pos=(0, 0, 0.2),
                                     text_fg=(1, 0, 0, 1),
                                     frameColor=(1, 1, 1, 1),
                                     relief="flat",
@@ -112,7 +112,7 @@ class GUI:
         btn_back = DirectButton(text="BACK",
                                 parent=frm_main_menu,
                                 scale=0.15,
-                                pos=(0, 0, -0.4),
+                                pos=(0, 0, -0.1),
                                 text_fg=(1, 0, 0, 1),
                                 frameColor=(1, 1, 1, 1),
                                 relief="flat",
@@ -177,6 +177,8 @@ class GUI:
         # positions the model being displayed
         self.model.loop("Idle")
         self.model.setScale(25)
+        # self.model.setScale(25)
+
         self.model.setPos(x_position, 120, -25)
         self.model.reparentTo(self.base.render)
         self.set_model_light(x_position)
@@ -297,6 +299,7 @@ class GUI:
             # If the controls selected were invalid
             self.lbl_error.hide()
             self.lbl_error = DirectLabel(text=self.base.controls.error_msg, scale=0.1)
+
             self.base.taskMgr.add(self.show_error_msg, "error message")
 
     def show_error_msg(self, task):
@@ -340,6 +343,11 @@ class GUI:
         self.bar_power_player2.show()
 
     def pause_menu(self):
+        self.lbl_time.hide()
+        self.bar_health_player1.hide()
+        self.bar_health_player2.hide()
+        self.bar_power_player1.hide()
+        self.bar_power_player2.hide()
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1),
                                 frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
@@ -361,7 +369,12 @@ class GUI:
                                  pos=(0, 0, -0.5),
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
-                                 relief="flat")
+                                 relief="flat",
+                                  command = self.base.unpause_game)
+
+        def quit_command():
+            self.base.end_game()
+            self.main_menu()
 
         btn_quit = DirectButton(text="QUIT",
                                  parent=frm_main,
@@ -369,9 +382,16 @@ class GUI:
                                  pos=(0, 0, -0.75),
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
-                                 relief="flat")
+                                 relief="flat",
+                                command = quit_command)
 
     def end_round_menu(self):
+        self.lbl_time.hide()
+        self.bar_health_player1.hide()
+        self.bar_health_player2.hide()
+        self.bar_power_player1.hide()
+        self.bar_power_player2.hide()
+
         frm_title = DirectFrame(frameSize=(-2, 2, -1, 1),
                                 frameColor=(0, 0, 0, 1))
         self.frm_current.hide()
@@ -394,7 +414,7 @@ class GUI:
                                  text_fg=(1, 0, 0, 1),
                                  frameColor=(1, 1, 1, 1),
                                  relief="flat",
-                                 command=self.main_menu)
+                                 command = self.title_menu )
     def settings_menu(self):
         frm_main = DirectFrame(frameSize=(-2, 2, -1, 1),
                                frameColor=(0, 0, 0, 1))
@@ -419,6 +439,4 @@ class GUI:
                                 relief="flat",
                                 command=self.title_menu)
 
-    def credits_menu(self):
-        pass
 

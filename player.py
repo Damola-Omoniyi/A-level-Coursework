@@ -1,18 +1,23 @@
+# Imports Required
 from direct.fsm.FSM import FSM
 from direct.actor.Actor import Actor
 from direct.fsm.FSM import FSM
 from panda3d.core import *
+import ai as ai
+from direct.showbase import DirectObject
+import random
+from direct.showbase.ShowBase import ShowBase
 
 
-class Player(FSM):
+class Player(FSM, DirectObject.DirectObject):
     def __init__(self, player_num, base):
         FSM.__init__(self, "character-FSM")
-        self.base = base
-        self.player_num = player_num
-        self.enemy = None
-        self.character = None
+        self.base = base  # Used to reference the main class
+        self.player_num = player_num  # Unique player number attribute for each player
+        self.enemy = None  # The player object of the opposing player
+        self.character = None  # The Actor model for the character
         self.gamepad_no = self.base.gamepad_nums[self.base.player_data[self.player_num - 1][2]]
-        self.is_moving = False  #
+        self.is_moving = False
         self.is_blocking = False  # Value that determines if a player is blocking or not
         self.is_jumping = False  # This value shows that a player is currently jumping
         self.speed = 0
@@ -27,6 +32,15 @@ class Player(FSM):
         self.c_sphere = CollisionSphere(0, 0, 1, 0.25)
         self.sphere_name = f"cnode{self.player_num}"  # player1's name would be cnode1
         self.sphere_nodepath = None
+        self.is_AI = False
+        if self.base.is_game_mode_single_player and self.gamepad_no != 3:
+            self.is_AI = False
+            self.input_layer = [0, 0, 0, 0, 0, 0]
+            self.total_distance = 0
+        else:
+            self.is_AI = True
+            self.ai = ai.AI()
+
 
     def set_light(self):
         # np stands for node path
@@ -41,7 +55,9 @@ class Player(FSM):
         self.base.render.setLight(a_light_np)
 
     def start(self):
+        # Method called at the start of the game to setup the player objects
         if self.gamepad_no < 2:
+            # Connect gamepad controllers
             self.base.controls.set_game_controls(self.gamepad_no)
         self.set_controls()
         self.character.reparentTo(self.base.render)
@@ -58,7 +74,21 @@ class Player(FSM):
         self.request("Idle")
         self.base.taskMgr.add(self.move_task, "move_task")
         self.base.taskMgr.add(self.attack_task, "attack_task")
-        self.base.taskMgr.add(self.death_task, "death_task")
+        self.base.taskMgr.add(self.death_task, f"death_task{self.player_num}")
+        if not self.is_AI and self.base.is_game_mode_single_player:
+            # self.accept('spam', self.on_spam, ['eggs', 'sausage'])
+
+            self.base.taskMgr.add(self.calc_ai_input, "AIStuff")
+            self.base.taskMgr.add(self.average_distance, "AIdist")
+        if self.is_AI:
+            self.accept("walk-f", self.walk_forward)
+            self.accept("walk-b", self.walk_backward)
+            self.accept('idle', self.stop_walk)
+            self.accept('jump', self.jump)
+            self.accept("block", self.block, [True])
+            self.accept("special move", self.block, [False])
+            self.accept("attack", self.Attack, [random.choice(['Attack1', 'Attack2', 'Attack3', 'Attack4'])])
+
 
     def set_controls(self):
         if self.gamepad_no == 2:
@@ -91,8 +121,9 @@ class Player(FSM):
             self.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
             self.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
 
-    # The group of methods below are dedicated to the FSM 
-    # enter-state and exit-state
+# ----------------------------------------------------------------------------------------------------------------------
+    '''The group of methods below are dedicated to the FSM which handles the character states.
+     Mostly in the format enter-state and exit-state'''
         
     def enterIdle(self):
         self.character.loop("Idle")
@@ -178,6 +209,15 @@ class Player(FSM):
     def exitSpecial2(self):
         self.character.stop()
 
+# ----------------------------------------------------------------------------------------------------------------------
+    def null_speed(self, a=0):
+        self.is_moving = False
+        self.speed = 0
+
+    def set_speed(self, a=0):
+        self.speed = 90
+        self.enemy.speed = 90
+
     def move_task(self, task):
         # MOVEMENT: Forward and backward
         dt = self.base.clock.dt  # delta time
@@ -185,10 +225,11 @@ class Player(FSM):
 
         if self.is_moving:
             self.character.setX(self.character.getX() + self.direction * self.speed * dt)
+            # Update the position of the character with each frame
         else:
             self.speed = 0
 
-        # If a character has reached end the screen they can no longer move
+        # If a character has reached end the screen they can no longer move to prevent them going off screen
         if self.character.getX() <= -650: 
             if self.direction == -1:
                 self.null_speed()
@@ -198,33 +239,82 @@ class Player(FSM):
                 self.null_speed()
         return task.cont
 
+    def walk_forward(self):
+        self.is_moving = True
+        self.direction = 1
+        self.request("Walk")
+        # Here add the walk task
+
+    def walk_backward(self):
+        self.is_moving = True
+        self.direction = -1
+        self.request("Walkback")
+        # Here remove the walk task might be more efficient as task is not running always.
+
+    def stop_walk(self):
+        # Activated when a player takes their hand off the movement buttons
+        self.is_moving = False
+        self.direction = 0
+        self.request("Idle")
+
+# ----------------------------------------------------------------------------------------------------------------------
+    def record(self):
+        pos1 = self.character.getX()  # Player's position
+        pos2 = self.enemy.character.getX()  # Enemy's position
+        self.distance = abs(pos2 - pos1)
+
     def attack_task(self, task):
         dt = self.base.clock.dt  # delta time
         current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
         self.record()  # Records the distance between the 2 players
-
         if current_anim in ['Attack1', 'Attack2', 'Attack3', 'Attack4']:
-            self.ignoreAll()
-            #   # If an attack has been engaged some controls are ignored till the attack is complete
-            if self.speed != 0:
-                self.speed -= 90  # Players speed is reduced to 0 so no movement until attack complete
+            self.ignoreAll()  # If an attack has been engaged some controls are ignored till the attack is complete
+            self.null_speed()  # Players speed is reduced to 0 so no movement until attack complete
         elif current_anim in ["Idle", "Walk"]:
             self.set_controls()  # Allow controls if player is idle or just walking
         return task.cont
 
+    def Attack(self, attack):
+        # Load an MP3 file as sound effect
+        # self.atk_sound.play()
+        # Load an MP3 file as background music
+        self.request(attack)  # Play animation
+        self.is_moving = False  # Stop movement
+        if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False:
+            # An attack is valid if enemy is not blocking and within range
+            self.enemy.health -= 25
+            self.power += 12.5
+            self.base.taskMgr.doMethodLater(self.ranges[attack][1], self.react, 'reaction time')
+            # Calls the React function after an appropriate time has elapsed
+            if not self.is_AI and self.base.is_game_mode_single_player:
+                self.input_layer[1] += 1
+
+    def react(self, task):
+        dt = self.base.clock.dt
+        self.enemy.request("Impact")  # Plays animation for when a hit is registered
+        # sound = self.base.loader.loadSfx("models/gruntsound.wav")
+        # sound.play()
+        # self.enemy.player.setX(self.player.getX() + 1 * 20 * dt)
+        return task.done
+
+# ----------------------------------------------------------------------------------------------------------------------
+
     def death_task(self, task):
-        if self.character.getCurrentAnim() is None:
-            if self.health <= 0 and not self.is_dead:
+        current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
+        if current_anim is None:
+            if self.health <= 0:
                 self.request('Death')
-                self.is_dead = True
                 self.base.game_ending = True
-                self.base.round_info[f'player{self.player_num}'] += 1
-                self.base.winner = f'player{self.player_num}'
+                self.base.taskMgr.remove(f"death_task{self.player_num}")
+                self.base.taskMgr.remove("attack_task")
+                self.base.taskMgr.remove("move_task")
+                self.ignoreAll()
+                self.enemy.ignoreAll()
                 # If no animation is playing and health is empty hide actor
             else:
-                if not self.is_dead:
-                    self.request("Idle")
+                self.request("Idle")
         return task.cont
+
 
     def jump_task(self, task):
         dt = self.base.clock.dt  # delta time
@@ -240,54 +330,27 @@ class Player(FSM):
             self.base.taskMgr.remove(f"jump-task{self.player_num}")
             self.set_controls()
             self.is_jumping = False
+            self.set_speed()
         return task.cont
 
     def jump(self):
         if not self.is_jumping:
-            print('jump', self.player_num)
+            self.null_speed()
             # Prevents a player from jumping again while currently jumping
             self.is_jumping = True
             self.request("Jump")
             self.z_pos = self.character.getZ()
             self.base.taskMgr.add(self.jump_task,f"jump-task{self.player_num}")
+            if not self.is_AI and self.base.is_game_mode_single_player:
+                # print("I run")
+                self.input_layer[2] += 1
+
     def end_player(self):
         self.ignoreAll()
         self.base.taskMgr.remove("move_task")
         self.base.taskMgr.remove("attack_task")
         self.base.taskMgr.remove("death_task")
-
-
-
-    def record(self):
-        pos1 = self.character.getX()  # Player's position
-        pos2 = self.enemy.character.getX()  # Enemy's position
-        self.distance = abs(pos2 - pos1)
-
-    def walk_forward(self):
-        self.is_moving = True
-        self.direction = 1
-        self.request("Walk")
-        # Here add the walk task 
-
-    def walk_backward(self):
-        self.is_moving = True
-        self.direction = -1
-        self.request("Walkback")
-        # Here remove the walk task might be more efficient as task is not running always.
-
-    def stop_walk(self):
-        # Activated when a player takes their hand off the move buttons
-        self.is_moving = False
-        self.direction = 0
-        self.request("Idle")
-
-    def null_speed(self, a=0):
-        self.is_moving = False
-        self.speed = 0
-
-    def set_speed(self, a=0):
-        self.speed = 90
-        self.enemy.speed = 90
+        self.character.hide()
 
     def setCollision(self, name):
         self.sphere_nodepath = self.character.attachNewNode(CollisionNode(self.sphere_name))
@@ -299,33 +362,51 @@ class Player(FSM):
         self.base.accept(f'{self.sphere_name}-again-{name}', self.null_speed)
         self.base.accept(f'{self.sphere_name}-out-{name}', self.set_speed)
 
-    def Attack(self, attack):
-        # Load an MP3 file as sound effect
-        # self.atk_sound.play()
-        # Load an MP3 file as background music
-        self.request(attack)  # Play animation
-        self.is_moving = False  # Stop movement
-        if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False:
-            # An attack is valid if enemy is not blocking and within range
-            self.enemy.health -= 5
-            self.power += 12.5
-            self.base.taskMgr.doMethodLater(self.ranges[attack][1], self.react, 'reaction time')
-            # Calls the React function after an appropriate time has elapsed
-
     def block(self, state):
         self.is_blocking = state
         self.is_moving = False
         if state:
             self.request("Block")
+            if not self.is_AI and self.base.is_game_mode_single_player:
+                self.base.taskMgr.add(self.block_calculations, "AI-block")
         else:
             self.request("Idle")
 
-    def react(self, task):
-        dt = self.base.clock.dt
-        self.enemy.request("Impact")  # Plays animation for when a hit is registered
-        # sound = self.base.loader.loadSfx("models/gruntsound.wav")
-        # sound.play()
-        # self.enemy.player.setX(self.player.getX() + 1 * 20 * dt)
-        return task.done
+# ----------------------------------------------------------------------------------------------------------------------
+    def average_distance(self, task):
+        pos1 = self.character.getX()  # Player's position
+        pos2 = self.enemy.character.getX()  # Enemy's position
+        distance = abs(pos2 - pos1)
+        self.total_distance += distance
+        return task.cont
+
+    def block_calculations(self, task):
+        if not self.is_blocking:
+            self.input_layer[3] = int(task.time)
+            self.base.taskMgr.remove("block-calc")
+        return task.cont
+
+    def calc_ai_input(self, task):
+        self.input_layer[4] = self.health
+        self.input_layer[5] = self.power
+        # print(self.input_layer)
+        if int(task.time) % 15 == 0:
+            # reset after a minute
+            avg = self.total_distance / (25 * 30)
+            self.input_layer[0] = avg
+            self.input_layer[0] = self.input_layer[0] / 100
+            self.input_layer[3] = self.input_layer[3] / 20
+            self.input_layer[4] = self.input_layer[4] / 100
+            self.input_layer[5] = self.input_layer[5] / 100
+            # print(self.input_layer)
+
+            self.enemy.ai.input_layer = self.input_layer
+            DirectObject.messenger.send('idle')
+            DirectObject.messenger.send('special move')
+            DirectObject.messenger.send(self.enemy.ai.perform())
+            self.input_layer = [0, 0, 0, 0, 0, 0]
+
+
+        return task.cont
 
 
