@@ -3,6 +3,7 @@
 from direct.gui.DirectGui import *
 from direct.actor.Actor import Actor
 from panda3d.core import *
+import complexpbr
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ class GUI:
         self.frm_current.hide()
         self.frm_current = frm_title
 
-        lbl_title = DirectLabel(text="GAME-NAME",
+        lbl_title = DirectLabel(text="MAXIM",
                                 parent=frm_title,
                                 text_fg=(1, 0, 0, 1),
                                 pos=(0, 0, 0.2),
@@ -172,6 +173,9 @@ class GUI:
         point_light_node_path.setPos(x_position, 95, -10)
         point_light_node_path.setScale(500)
         self.model.setLight(point_light_node_path)
+        if self.model == self.models["Crypto"]:
+            complexpbr.apply_shader(self.model)
+            point_light.setColor((50, 50, 50, 1))
 
     def set_model(self, x_position=35):
         # positions the model being displayed

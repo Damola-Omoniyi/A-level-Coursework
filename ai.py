@@ -23,13 +23,13 @@ class AI:
         Wc0 = (2, 6.5, 10)
         Wc1 = (12, 4.5, 1.5)
 
-        Wd0 = (15, 0)  # attack
-        Wd1 = (1, 10)  # jump
-        Wd2 = (1, 15)  # block
-        Wd3 = (15, 5)  # move away
-        Wd4 = (10, 15)  # move towards
+        Wd0 = (15, 2)  # attack
+        Wd1 = (7, 10)  # jump
+        Wd2 = (5, 15)  # block
+        Wd3 = (3.5, 10)  # move away
+        Wd4 = (10, 3)  # move towards
         Wd5 = (15, 2)  # special move
-        Wd6 = (10, 3)  # idle
+        Wd6 = (0.01, 3)  # idle
 
         b0 = 1
         b1 = 1
