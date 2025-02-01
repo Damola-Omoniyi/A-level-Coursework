@@ -43,18 +43,6 @@ class Player(FSM, DirectObject.DirectObject):
             self.ai = ai.AI()
 
 
-    def set_light(self):
-        # np stands for node path
-        d_light = DirectionalLight('d_light')
-        a_light = AmbientLight('a_light')
-        d_light_np = self.base.render.attachNewNode(d_light)
-        a_light_np = self.base.render.attachNewNode(a_light)
-        d_light.setColor((2, 2, 2, 1))
-        a_light.setColor((0.5, 0.5, 0.5, 1))
-        d_light_np.setHpr(-60, -30, 10)
-        self.base.render.setLight(d_light_np)
-        self.base.render.setLight(a_light_np)
-
     def start(self):
         # Method called at the start of the game to setup the player objects
         if self.gamepad_no < 2:
@@ -63,9 +51,9 @@ class Player(FSM, DirectObject.DirectObject):
         self.set_controls()
         self.character.reparentTo(self.base.render)
         self.character.setScale(200)
-        self.set_light()
         self.base.cam.setZ(50)
         self.character.setPos(0, 1000, -150)
+        self.set_light()
         if self.player_num == 1:
             self.character.setX(-200)
             self.character.setH(90)
@@ -121,6 +109,26 @@ class Player(FSM, DirectObject.DirectObject):
             self.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
             self.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
             self.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
+    def set_light(self):
+        # np stands for node path
+        d_light = DirectionalLight('d_light')
+        a_light = AmbientLight('a_light')
+        d_light_np = self.character.attachNewNode(d_light)
+        d_light_np.setZ(100)
+        a_light_np = self.character.attachNewNode(a_light)
+        d_light.setColor((2.5, 2.5, 2.5, 1))
+        a_light.setColor((2.5, 2.5, 2.5, 1))
+        d_light_np.setHpr(-60, -30, 10)
+        self.character.setLight(d_light_np)
+        self.character.setLight(a_light_np)
+        point_light = PointLight("point_light")
+        point_light_node_path = self.character.attachNewNode(point_light)
+        point_light_node_path.setScale(500)
+        point_light_node_path.setPos(self.character.getPos())
+        point_light_node_path.setZ(self.character.getZ() + 30)
+        point_light_node_path.setY(self.character.getY() + 100)
+        point_light.setColor((5, 5, 5, 1))
+        self.character.setLight(point_light_node_path)
 
 # ----------------------------------------------------------------------------------------------------------------------
     '''The group of methods below are dedicated to the FSM which handles the character states.
@@ -304,6 +312,7 @@ class Player(FSM, DirectObject.DirectObject):
         current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
         if current_anim is None:
             if self.health <= 0:
+                self.base.winner = f"PLAYER{self.enemy.player_num}"
                 self.request('Death')
                 self.base.game_ending = True
                 self.base.taskMgr.remove(f"death_task{self.player_num}")
@@ -391,7 +400,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.input_layer[4] = self.health
         self.input_layer[5] = self.power
         # print(self.input_layer)
-        if int(task.time) % 15 == 0:
+        if int(task.time) % 2.5 == 0:
             # reset after a minute
             avg = self.total_distance / (25 * 30)
             self.input_layer[0] = avg

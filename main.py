@@ -2,12 +2,14 @@
 # Import section
 from direct.showbase.ShowBase import ShowBase
 from direct.actor.Actor import Actor
+from direct.task.Task import Task
 from gui import GUI
 from controls import Controller
 from panda3d.core import *
 from crypto import Crypto
 from knight import Knight
-
+import complexpbr
+# mySound.setVolume(0.5)
 loadPrcFile("config/Config.prc")
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -34,12 +36,13 @@ class Main(ShowBase):
         self.prop = self.loader.loadModel("models/Pier/Pier.egg")
         self.scene_id = 1  # Scene selected by player
 
-        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
-        self.current_song = self.loader.loadMusic(self.music[0])
-        self.can_play_song = True
-        self.taskMgr.add(self.update_music, "music")
+        # complexpbr.apply_shader(self.render)
+        # self.set_scene_light()
+        # self.render.setShaderAuto()
 
-        self.time = 0
+        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
+        self.current_song_index = 0
+        self.load_next_song()
 
 
         self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
@@ -93,6 +96,9 @@ class Main(ShowBase):
         self.set_collisions()
         self.player1.start()
         self.player2.start()
+        self.UI.bar_power_player1.hide()
+        self.UI.bar_power_player2.hide()
+        self.UI.lbl_time.hide()
         self.accept("space", self.pause_game)
         self.taskMgr.add(self.timer, "time_task")
         self.taskMgr.add(self.update_cam, "update-camera")
@@ -104,7 +110,6 @@ class Main(ShowBase):
         self.player2.ignoreAll()
         self.ignoreAll()
         self.UI.pause_menu()
-        print("paused")
 
     def unpause_game(self):
         self.UI.frm_current.hide()
@@ -160,23 +165,17 @@ class Main(ShowBase):
         return task.cont
 
     # TODO: Fix this please
-    def update_music(self, task):
-            # print(f"Total-length: {self.current_song.length()}  Current-time {self.current_song.getTime()}")
-            for song in self.music:
-                if self.can_play_song:
-                    #print(song)
-                    #self.can_play_song = False
-                    self.current_song = self.loader.loadMusic(song)
-                    # YOU ARE SO SILLY!!! RESET VALUES RESET VALUE WE HAVE BEEN HERE FOR OVER 2 HOURS FOR JUST ONE LINE
-                    self.current_song.play()
+    def load_next_song(self):
+        song = self.music[self.current_song_index]
+        self.current_song = self.loader.loadMusic(song)
+        self.current_song.setFinishedEvent('song-finished')
+        self.accept('song-finished', self.on_song_finished)
+        self.current_song.play()
+        self.current_song.setPlayRate(2.5)
 
-                    self.current_song.length()
-                    self.current_song.getTime()
-                    # if self.current_song.length() > self.current_song.getTime():
-                    #    self.can_play_song = False
-                    # else:
-                    #    self.can_play_song = True
-            return  task.cont
+    def on_song_finished(self):
+        self.current_song_index = (self.current_song_index + 1) % len(self.music)
+        self.load_next_song()
 
     def update_gui(self, task):
         # time = f"{int(task.time)}"
@@ -189,6 +188,19 @@ class Main(ShowBase):
         self.UI.lbl_time["text"] = f"{120-self.time}"
 
         return task.cont
+
+    def set_scene_light(self):
+        # np stands for node path
+        d_light = DirectionalLight('d_light')
+        a_light = AmbientLight('a_light')
+        d_light_np = self.render.attachNewNode(d_light)
+        d_light_np.setZ(100)
+        a_light_np = self.render.attachNewNode(a_light)
+        d_light.setColor((10,10, 10, 1))
+        a_light.setColor((2.5, 2.5, 2.5, 1))
+        d_light_np.setHpr(-60, -30, 10)
+        self.render.setLight(d_light_np)
+        self.render.setLight(a_light_np)
 
 
     def load_scene(self, scene_id, close = False):
