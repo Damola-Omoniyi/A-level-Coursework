@@ -276,6 +276,7 @@ class Player(FSM, DirectObject.DirectObject):
         dt = self.base.clock.dt  # delta time
         current_anim = self.character.getCurrentAnim()  # Variable holds the current animation being played
         self.record()  # Records the distance between the 2 players
+        self.atk_sound.setVolume(self.base.UI.slider_sound["value"]/50)
         if current_anim in ['Attack1', 'Attack2', 'Attack3', 'Attack4']:
             self.ignoreAll()  # If an attack has been engaged some controls are ignored till the attack is complete
             self.null_speed()  # Players speed is reduced to 0 so no movement until attack complete
@@ -289,7 +290,7 @@ class Player(FSM, DirectObject.DirectObject):
         # Load an MP3 file as background music
         self.request(attack)  # Play animation
         self.is_moving = False  # Stop movement
-        if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False:
+        if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False and not self.is_jumping:
             # An attack is valid if enemy is not blocking and within range
             self.enemy.health -= 25
             self.power += 12.5
@@ -303,6 +304,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.enemy.request("Impact")  # Plays animation for when a hit is registered
         sound = self.base.loader.loadSfx("models/gruntsound.wav")
         sound.play()
+        sound.setVolume(self.base.UI.slider_sound["value"]/50)
         # self.enemy.player.setX(self.player.getX() + 1 * 20 * dt)
         return task.done
 

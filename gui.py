@@ -44,6 +44,16 @@ class GUI:
         self.controls = ("keyboard", "gamepad1", "gamepad2")  # List of available controls
         self.lbl_error = DirectLabel() # Label that displays an error message when selecting invalid controls
 
+        self.slider_music = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.75))
+        self.slider_music.hide()
+
+        self.slider_sound = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.25))
+        self.slider_sound.hide()
+
+        self.slider_brightness = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, -0.25))
+        self.slider_brightness.hide()
+
+
 
     def start(self):
         # This function is called at the start of the game to load the game's GUI
@@ -425,14 +435,14 @@ class GUI:
         self.frm_current.hide()
         self.frm_current = frm_main
 
-        slider_music = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.75), parent=frm_main)
+        self.slider_music = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.75), parent=frm_main)
         lbl_music = DirectLabel(text="Music", scale=0.1, pos=(0.75, 0, 0.7), parent=frm_main)
 
-        slider_sound = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.25), parent=frm_main)
+        self.slider_sound = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, 0.25), parent=frm_main)
         lbl_sound = DirectLabel(text="Sounds", scale=0.1, pos=(0.75, 0, 0.22), parent=frm_main)
 
-        slider_brightness = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, -0.25), parent=frm_main)
-        lbl_brightness = DirectLabel(text="Brightness", scale=0.1, pos=(0.75, 0, -0.27), parent=frm_main)
+        # self.slider_brightness = DirectSlider(range=(0, 100), value=50, pageSize=1, pos=(-0.75, 0, -0.25), parent=frm_main)
+        # lbl_brightness = DirectLabel(text="Brightness", scale=0.1, pos=(0.75, 0, -0.27), parent=frm_main)
 
         btn_back = DirectButton(text="BACK",
                                 parent=frm_main,
