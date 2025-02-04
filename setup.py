@@ -8,6 +8,11 @@ setup(
             'gui_apps': {
                 'maxim': 'main.py',
             },
+            "icons": {
+                # The key needs to match the key used in gui_apps/console_apps.
+                # Alternatively, use "*" to set the icon for all apps.
+                "maxim": ["maxim.jpg"],
+            },
 
             # Set up output logging, important for GUI apps!
             'log_filename': '$USER_APPDATA/Maxim/output.log',
@@ -21,25 +26,15 @@ setup(
                 '**/*.wav',
                 '**/*.bam',
                 '**/*.mp3',
-
-
-
             ],
 
-            "gui_apps": {
-    "main": "src/main.py",
-},
-"icons": {
-    # The key needs to match the key used in gui_apps/console_apps.
-    # Alternatively, use "*" to set the icon for all apps.
-    "maxim": ["icon-16.png"],
-},
 
             # Include the OpenGL renderer and OpenAL audio plug-in
             'plugins': [
                 'pandagl',
                 'p3openal_audio',
             ],
+
         }
     }
 )
