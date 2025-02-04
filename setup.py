@@ -32,7 +32,7 @@ setup(
 "icons": {
     # The key needs to match the key used in gui_apps/console_apps.
     # Alternatively, use "*" to set the icon for all apps.
-    "maxim": ["icon-16.png"],
+    "maxim": ["maxim.png"],
 },
 
             # Include the OpenGL renderer and OpenAL audio plug-in
