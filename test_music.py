@@ -5,21 +5,32 @@ from panda3d.core import *
 class Main(ShowBase):
     def __init__(self):
         super().__init__()
-        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]
-        self.current_song_index = 0
-        self.load_next_song()
+        self.music_list = [self.loader.loadMusic("models/Music/AOT.mp3"), self.loader.loadMusic("models/Music/KNY.mp3")]
+        self.music_active = 0
+        self.play_song = False
 
-    def load_next_song(self):
-        song = self.music[self.current_song_index]
-        self.current_song = self.loader.loadMusic(song)
-        self.current_song.setFinishedEvent('song-finished')
-        self.accept('song-finished', self.on_song_finished)
-        self.current_song.play()
-        self.current_song.setPlayRate(2.5)
+        self.taskMgr.add(self.music_task, "music-task")
 
-    def on_song_finished(self):
-        self.current_song_index = (self.current_song_index + 1) % len(self.music)
-        self.load_next_song()
+        self.my_play(0)
+
+    def my_play(self, number):
+        self.music_list[number].play()
+        self.music_active = number
+        self.play_song = True
+        print(self.music_list[number].getName())
+
+    def music_task(self, task):
+        if self.music_list[self.music_active].status() == 1:
+            if self.play_song == True:
+                self.play_song = False
+                if self.music_active < len(self.music_list)-1:
+                    self.music_active += 1
+                else:
+                    self.music_active = 0
+
+                self.my_play(self.music_active)
+
+        return task.cont
 
 
 base = Main()
