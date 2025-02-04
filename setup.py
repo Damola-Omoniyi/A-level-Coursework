@@ -27,8 +27,6 @@ setup(
                 '**/*.bam',
                 '**/*.mp3',
             ],
-
-
             # Include the OpenGL renderer and OpenAL audio plug-in
             'plugins': [
                 'pandagl',
