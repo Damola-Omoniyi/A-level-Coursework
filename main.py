@@ -61,6 +61,7 @@ class Main(ShowBase):
         self.game_ending = False
         self.round = 1  # Rounds 1, 2 or 3
         self.winner = ""
+        self.taskMgr.add(self.settings_task, "settings")
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -171,7 +172,6 @@ class Main(ShowBase):
         self.current_song.setFinishedEvent('song-finished')
         self.accept('song-finished', self.on_song_finished)
         self.current_song.play()
-        self.current_song.setPlayRate(2.5)
 
     def on_song_finished(self):
         self.current_song_index = (self.current_song_index + 1) % len(self.music)
@@ -228,6 +228,10 @@ class Main(ShowBase):
             self.scene.setPos(400, 1000, -1000)
             self.scene.setScale(75)
             self.set_background_color(0.53, 0.81, 0.98)
+
+    def settings_task(self, task):
+        self.current_song.setVolume(self.UI.slider_music["value"]/50)
+        return task.cont
 
 
 base = Main()

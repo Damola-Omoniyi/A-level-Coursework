@@ -1,5 +1,0 @@
-1) The player.py file needs a lot of work
-2) I want to have the main file character selection similar to the one in main 2 but this
-time AI and everything is concluded at once. e.g. Blackdeath(hasai=None, player_num=3)
-Make AI class more refined
-improve controls section of player class.
