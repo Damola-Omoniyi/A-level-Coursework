@@ -2,6 +2,9 @@ from setuptools import setup
 
 setup(
     name='maxim',
+    install_requires=[
+        'complexpbr'  # Ensure complexpbr is installed
+    ],
     options={
         'build_apps': {
             # Build asteroids.exe as a GUI application
@@ -26,6 +29,10 @@ setup(
                 '**/*.wav',
                 '**/*.bam',
                 '**/*.mp3',
+                '**/*.vert',
+                '**/*.frag',
+                '**/*.glsl',
+                '**/*.shader',
             ],
             # Include the OpenGL renderer and OpenAL audio plug-in
             'plugins': [
