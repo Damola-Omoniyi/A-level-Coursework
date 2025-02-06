@@ -292,7 +292,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.is_moving = False  # Stop movement
         if self.distance <= self.ranges[attack][0] and self.enemy.is_blocking is False and not self.is_jumping:
             # An attack is valid if enemy is not blocking and within range
-            self.enemy.health -= 25
+            self.enemy.health -= 12.5
             self.power += 12.5
             self.base.taskMgr.doMethodLater(self.ranges[attack][1], self.react, 'reaction time')
             # Calls the React function after an appropriate time has elapsed
