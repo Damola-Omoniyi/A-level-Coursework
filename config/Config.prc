@@ -26,7 +26,7 @@ win-size 800 600
 # Uncomment this line if you want to run Panda fullscreen instead of
 # in a window.
 
-fullscreen #f
+fullscreen #t
 
 # The framebuffer-hardware flag forces it to use an accelerated driver.
 # The framebuffer-software flag forces it to use a software renderer.

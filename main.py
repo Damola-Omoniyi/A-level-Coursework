@@ -11,13 +11,18 @@ from knight import Knight
 import complexpbr
 # mySound.setVolume(0.5)
 loadPrcFile("config/Config.prc")
-
 # ----------------------------------------------------------------------------------------------------------------------
 
 class Main(ShowBase):
     def __init__(self):
+        pipe = GraphicsPipeSelection.getGlobalPtr().makeDefaultPipe()
+        if pipe:
+            width = pipe.getDisplayWidth()
+            height = pipe.getDisplayHeight()
+            loadPrcFileData("", f"win-size {width} {height}")
         super().__init__()
         self.disableMouse()  # Prevents user from moving camera
+
 
         self.UI = GUI(self)  # create an instance of the GUI class and start the game
         self.UI.start()
@@ -117,7 +122,7 @@ class Main(ShowBase):
         self.player1.set_controls()
         self.player2.set_controls()
         self.accept("space", self.pause_game)
-        self.UI.lbl_time.show()
+        # self.UI.lbl_time.show()
         self.UI.bar_health_player1.show()
         self.UI.bar_health_player2.show()
         self.UI.bar_power_player1.show()

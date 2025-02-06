@@ -5,6 +5,7 @@ setup(
     install_requires=[
         'complexpbr'  # Ensure complexpbr is installed
     ],
+    packages=['complexpbr'],
     options={
         'build_apps': {
             # Build asteroids.exe as a GUI application
@@ -32,13 +33,22 @@ setup(
                 '**/*.vert',
                 '**/*.frag',
                 '**/*.glsl',
+                '**/*.prc',
                 '**/*.shader',
+                '**/*.egg.pz',
+                '**/*.tif',
+                'maps/*',
+                'Lib/complexpbr/*.vert',  # Include complexpbr shaders
+                'Lib/complexpbr/*.frag',
+
             ],
             # Include the OpenGL renderer and OpenAL audio plug-in
-            'plugins': [
-                'pandagl',
-                'p3openal_audio',
-            ],
+            'plugins': ['pandagl', 'p3openal_audio', 'p3ffmpeg', 'p3fmod_audio'],
+            # Include the complexpbr module and its dependencies
+            'include_modules': {
+                '*': ['complexpbr'],
+
+            },
 
         }
     }
