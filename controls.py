@@ -11,7 +11,7 @@ class Controller:
 
         self.gamepad = "Keyboard"
         self.gamepads = self.base.devices.getDevices(InputDevice.DeviceClass.gamepad)
-        self.base.taskMgr.add(self.update_controls_task, "UPdate controls ")
+        self.base.taskMgr.add(self.update_controls_task, "Update controls ")
         # The list of all external game pads detected
         self.error_msg = ""
 
@@ -49,5 +49,4 @@ class Controller:
     def set_game_controls(self, gamepad_no):
         self.gamepad = self.gamepads[gamepad_no]
         gamepad_name = f"gamepad{gamepad_no}"
-        #if self.gamepad not in self.base.devices.getDevices(InputDevice.DeviceClass.gamepad):
         self.base.attachInputDevice(self.gamepad, prefix=gamepad_name)
