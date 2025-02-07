@@ -11,7 +11,6 @@ class Crypto(Player):
         self.base = base
         super().__init__(self.player_num, self.base)
 
-
         self.character = Actor("models/Crypto/Crypto.bam",
                             {"Attack1": "models/Crypto/Crypto_Attack1.bam",
                              "Attack2": "models/Crypto/Crypto_Attack2.bam",
@@ -39,8 +38,8 @@ class Crypto(Player):
             "Attack2": [433.4682922363281, 0.25],
             "Attack3": [358.3881530761719, 0.5],
             "Attack4": [282.9663848876953, 0.25]}
-        self.atk_sound =self.base.loader.loadSfx("models/qubodupPunch01.ogg")
-       # self.set_light()
+
+        self.atk_sound = self.base.loader.loadSfx("models/qubodupPunch01.ogg")
 
     def set_light(self):
         d_light = DirectionalLight('d_light')
