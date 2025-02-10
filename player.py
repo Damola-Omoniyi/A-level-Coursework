@@ -318,8 +318,6 @@ class Player(FSM, DirectObject.DirectObject):
                 self.request('Death')
                 self.base.game_ending = True
                 self.base.taskMgr.remove(f"death_task{self.player_num}")
-                self.ignoreAll()
-                self.enemy.ignoreAll()
             else:
                 self.request("Idle")
         return task.cont
