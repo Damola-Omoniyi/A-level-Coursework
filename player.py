@@ -318,11 +318,8 @@ class Player(FSM, DirectObject.DirectObject):
                 self.request('Death')
                 self.base.game_ending = True
                 self.base.taskMgr.remove(f"death_task{self.player_num}")
-                self.base.taskMgr.remove("attack_task")
-                self.base.taskMgr.remove("move_task")
                 self.ignoreAll()
                 self.enemy.ignoreAll()
-                # If no animation is playing and health is empty hide actor
             else:
                 self.request("Idle")
         return task.cont
@@ -361,7 +358,6 @@ class Player(FSM, DirectObject.DirectObject):
         self.ignoreAll()
         self.base.taskMgr.remove("move_task")
         self.base.taskMgr.remove("attack_task")
-        self.base.taskMgr.remove("death_task")
         self.character.hide()
 
     def setCollision(self, name):
