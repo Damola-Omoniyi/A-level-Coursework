@@ -43,10 +43,16 @@ class Main(ShowBase):
         self.prop = self.loader.loadModel("models/Pier/Pier.egg")  # sun or Pier
         self.scene_id = 1  # Scene selected by player
 
-        self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]  # Music Playlist
-        self.play_song = True
+        self.music_list = [self.loader.loadMusic("models/Music/AOT.mp3"), self.loader.loadMusic("models/Music/KNY.mp3")]
+        self.music_active = 0
+        self.play_song = False
+
         self.taskMgr.add(self.music_task, "music-task")
-        
+
+        self.my_play(0)
+
+
+     
 
         self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
         # CPU is used for single player against an AI
@@ -167,19 +173,27 @@ class Main(ShowBase):
         self.cam.setX((self.player1.character.getX() + self.player2.character.getX())/2)
         # Sets the camera right between both players
         return task.cont
-        
+    
+    def my_play(self, number):
+        self.music_list[number].play()
+        self.music_active = number
+        self.play_song = True
+        print(self.music_list[number].getName())
+
     def music_task(self, task):
-        for song in self.music:
-            if self.play_song:
-                self.current_song = self.loader.loadMusic(song)
-                self.current_song.play()
-                self.current_song.setPlayRate(2)
+        if self.music_list[self.music_active].status() == 1:
+            if self.play_song == True:
                 self.play_song = False
-            if self.current_song.getTime() < self.current_song.length():
-                self.play_song = False
-            else:
-                self.play_song = True
+                if self.music_active < len(self.music_list)-1:
+                    self.music_active += 1
+                else:
+                    self.music_active = 0
+
+                self.my_play(self.music_active)
+
         return task.cont
+        
+    
 
 
    
