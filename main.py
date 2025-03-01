@@ -48,6 +48,7 @@ class Main(ShowBase):
         self.play_song = False
 
         self.taskMgr.add(self.music_task, "music-task")
+        self.current_song = self.music_list[0]
 
         self.my_play(0)
 
@@ -173,12 +174,13 @@ class Main(ShowBase):
         self.cam.setX((self.player1.character.getX() + self.player2.character.getX())/2)
         # Sets the camera right between both players
         return task.cont
-    
+
     def my_play(self, number):
-        self.music_list[number].play()
+        self.current_song = self.music_list[number]
+        self.current_song.play()
         self.music_active = number
         self.play_song = True
-        print(self.music_list[number].getName())
+        # print(self.music_list[number].getName())
 
     def music_task(self, task):
         if self.music_list[self.music_active].status() == 1:
