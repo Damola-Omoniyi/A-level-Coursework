@@ -44,8 +44,9 @@ class Main(ShowBase):
         self.scene_id = 1  # Scene selected by player
 
         self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]  # Music Playlist
-        self.current_song_index = 0
-        self.load_next_song()
+        self.play_song = True
+        self.taskMgr.add(self.music_task, "music-task")
+        
 
         self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
         # CPU is used for single player against an AI
@@ -166,18 +167,22 @@ class Main(ShowBase):
         self.cam.setX((self.player1.character.getX() + self.player2.character.getX())/2)
         # Sets the camera right between both players
         return task.cont
+        
+    def music_task(self, task):
+        for song in self.music:
+            if self.play_song:
+                self.current_song = self.loader.loadMusic(song)
+                self.current_song.play()
+                self.current_song.setPlayRate(2)
+                self.play_song = False
+            if self.current_song.getTime() < self.current_song.length():
+                self.play_song = False
+            else:
+                self.play_song = True
+        return task.cont
 
-    def load_next_song(self):
-        song = self.music[self.current_song_index]
-        self.current_song = self.loader.loadMusic(song)
-        self.current_song.setFinishedEvent('song-finished')
-        self.accept('song-finished', self.on_song_finished)
-        self.current_song.play()
 
-    def on_song_finished(self):
-        self.current_song_index = (self.current_song_index + 1) % len(self.music)
-        self.load_next_song()
-
+   
     def update_gui(self, task):
         # time = f"{int(task.time)}"
         # self.UI.lbl_time["text"] = time
