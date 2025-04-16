@@ -396,7 +396,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.input_layer[4] = self.health
         self.input_layer[5] = self.power
         # print(self.input_layer)
-        if int(task.time) % 2.5 == 0:
+        if int(task.time) % 2.5 == 0: # Avoid using an integer version of task.time as this would occur for multiple frames instead try the regular python time module to perform the action for one precise frame.
             # reset after a minute
             avg = self.total_distance / (25 * 30)
             self.input_layer[0] = avg
