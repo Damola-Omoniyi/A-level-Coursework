@@ -8,10 +8,10 @@ def sigmoid(x):
 
 
 def mat_mul(a, b):
-    sm = 0
+    sum = 0
     for i in range(len(a)):
-        sm += a[i] * b[i]
-    return sm
+        sum += a[i] * b[i]
+    return sum
 
 class AI:
     def __init__(self):
