@@ -16,13 +16,17 @@ def mat_mul(a, b):
 class AI:
     def __init__(self):
         self.input_layer = [0, 0, 0, 0, 0, 0]
+
+        # Weights for input layer
         Wb0 = (0.05, 10, 5, 0.01, 2, 10)
         Wb1 = (1, 2, 2.5, 7.5, 10, 2)
         Wb2 = (10, 0.05, 0.1, 11, 8, 0.1)
 
+        # Weights for the hidden layer
         Wc0 = (2, 6.5, 10)
         Wc1 = (12, 4.5, 1.5)
 
+        # Weights for the output layer
         Wd0 = (15, 2)  # attack
         Wd1 = (7, 10)  # jump
         Wd2 = (5, 15)  # block
@@ -31,13 +35,17 @@ class AI:
         Wd5 = (15, 2)  # special move
         Wd6 = (0.01, 3)  # idle
 
+        # Individual nodes in the network
+        # nodes for the second layer
         b0 = 1
         b1 = 1
         b2 = 1
 
+        # Nodes for the 3rd layer
         c0 = 1
         c1 = 1
 
+        # nodes for the output layer
         d0 = 1
         d1 = 1
         d2 = 1
