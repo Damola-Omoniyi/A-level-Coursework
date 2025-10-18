@@ -17,7 +17,7 @@ load-display pandagl
 #load-display p3tinydisplay
 
 # These control the placement and size of the default rendering window.
-# A value of -2 for the origin means to center it on the screen,
+# A value of -2 for theForigin means to center it on the screen,
 # while -1 lets the window manager choose the position.
 
 win-origin -2 -2
@@ -26,7 +26,7 @@ win-size 800 600
 # Uncomment this line if you want to run Panda fullscreen instead of
 # in a window.
 
-fullscreen #t
+fullscreen #f
 
 # The framebuffer-hardware flag forces it to use an accelerated driver.
 # The framebuffer-software flag forces it to use a software renderer.
