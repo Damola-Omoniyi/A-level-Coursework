@@ -23,7 +23,7 @@ class Main(ShowBase):
         if pipe:
             width = pipe.getDisplayWidth()
             height = pipe.getDisplayHeight()
-            loadPrcFileData("", f"win-size {width} {height}")
+            # loadPrcFileData("", f"win-size {width} {height}")
 
         super().__init__()
         self.disableMouse()  # Prevents user from moving camera
@@ -45,7 +45,7 @@ class Main(ShowBase):
 
         self.music = ["models/Music/AOT.mp3", "models/Music/KNY.mp3"]  # Music Playlist
         self.play_song = True
-        self.taskMgr.add(self.music_task, "music-task")
+        # self.taskMgr.add(self.music_task, "music-task")
         
 
         self.gamepad_nums = {"gamepad1": 0, "gamepad2": 1, "keyboard": 2, "CPU": 3}
@@ -65,7 +65,7 @@ class Main(ShowBase):
         self.game_ending = False
         self.winner = ""
 
-        self.taskMgr.add(self.settings_task, "settings")  # Task to update settings values
+        #self.taskMgr.add(self.settings_task, "settings")  # Task to update settings values
 
 # ----------------------------------------------------------------------------------------------------------------------
 
