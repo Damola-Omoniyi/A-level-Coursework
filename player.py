@@ -34,6 +34,7 @@ class Player(FSM, DirectObject.DirectObject):
         self.sphere_nodepath = None
         self.atk_sound =self.base.loader.loadSfx("models/sword_sfx.wav")
         self.is_AI = False
+
         if self.base.is_game_mode_single_player and self.gamepad_no != 3:
             self.is_AI = False
             self.input_layer = [0, 0, 0, 0, 0, 0]
@@ -69,14 +70,7 @@ class Player(FSM, DirectObject.DirectObject):
 
             self.base.taskMgr.add(self.calc_ai_input, "AIStuff")
             self.base.taskMgr.add(self.average_distance, "AIdist")
-        if self.is_AI:
-            self.accept("walk-f", self.walk_forward)
-            self.accept("walk-b", self.walk_backward)
-            self.accept('idle', self.stop_walk)
-            self.accept('jump', self.jump)
-            self.accept("block", self.block, [True])
-            self.accept("special move", self.block, [False])
-            self.accept("attack", self.Attack, [random.choice(['Attack1', 'Attack2', 'Attack3', 'Attack4'])])
+
 
 
     def set_controls(self):
@@ -109,6 +103,15 @@ class Player(FSM, DirectObject.DirectObject):
             self.accept(f"{gamepad_name}-dpad_left-up", self.stop_walk)
             self.accept(f"{gamepad_name}-dpad_right", self.walk_forward)
             self.accept(f"{gamepad_name}-dpad_right-up", self.stop_walk)
+
+        if self.is_AI:
+            self.accept("walk-f", self.walk_forward)
+            self.accept("walk-b", self.walk_backward)
+            self.accept('idle', self.stop_walk)
+            self.accept('jump', self.jump)
+            self.accept("block", self.block, [True])
+            self.accept("special move", self.block, [False])
+            self.accept("attack", self.Attack, [random.choice(['Attack1', 'Attack2', 'Attack3', 'Attack4'])])
     def set_light(self):
         # np stands for node path
         d_light = DirectionalLight('d_light')
@@ -356,6 +359,9 @@ class Player(FSM, DirectObject.DirectObject):
         self.ignoreAll()
         self.base.taskMgr.remove("move_task")
         self.base.taskMgr.remove("attack_task")
+        if self.base.is_game_mode_single_player:
+            self.base.taskMgr.remove("AIStuff")
+            self.base.taskMgr.remove("AIdist")
         self.character.hide()
 
     def setCollision(self, name):
@@ -396,21 +402,20 @@ class Player(FSM, DirectObject.DirectObject):
         self.input_layer[4] = self.health
         self.input_layer[5] = self.power
         # print(self.input_layer)
-        if int(task.time) % 2.5 == 0: # Avoid using an integer version of task.time as this would occur for multiple frames instead try the regular python time module to perform the action for one precise frame.
-            # reset after a minute
-            avg = self.total_distance / (25 * 30)
+        print("attack", self.input_layer[1])
+        if int(task.time) % 3 == 0: # Avoid using an integer version of task.time as this would occur for multiple frames instead try the regular python time module to perform the action for one precise frame.
+            # reset
+            avg = self.total_distance / (3 * 30)
             self.input_layer[0] = avg
             self.input_layer[0] = self.input_layer[0] / 100
             self.input_layer[3] = self.input_layer[3] / 20
             self.input_layer[4] = self.input_layer[4] / 100
             self.input_layer[5] = self.input_layer[5] / 100
             # print(self.input_layer)
-
             self.enemy.ai.input_layer = self.input_layer
-            DirectObject.messenger.send('idle')
-            DirectObject.messenger.send('special move')
             DirectObject.messenger.send(self.enemy.ai.perform())
             self.input_layer = [0, 0, 0, 0, 0, 0]
+            self.total_distance = 0
 
 
         return task.cont
