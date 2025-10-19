@@ -184,8 +184,8 @@ class GUI:
         point_light_node_path.setScale(500)
         self.model.setLight(point_light_node_path)
         if self.model == self.models["Crypto"]:
-            complexpbr.apply_shader(self.model)
-            point_light.setColor((50, 50, 50, 1))
+            # complexpbr.apply_shader(self.model)
+            point_light.setColor((1, 1, 1, 1))
 
     def set_model(self, x_position=35):
         # positions the model being displayed
