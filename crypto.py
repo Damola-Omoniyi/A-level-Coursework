@@ -2,7 +2,7 @@ from direct.fsm.FSM import FSM
 from panda3d.core import *
 from direct.actor.Actor import Actor
 from player import Player
-import complexpbr
+# import complexpbr
 
 
 class Crypto(Player):
@@ -59,9 +59,9 @@ class Crypto(Player):
         point_light_node_path.setPos(self.character.getPos())
         point_light_node_path.setZ(self.character.getZ()+30)
         point_light_node_path.setY(self.character.getY() + 100)
-        point_light.setColor((50, 50, 50, 1))
+        point_light.setColor((1, 1, 1, 1))
         self.character.setLight(point_light_node_path)
-        complexpbr.apply_shader(self.character)
+        #  complexpbr.apply_shader(self.character)
 
 
 
